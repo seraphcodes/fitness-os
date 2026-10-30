@@ -660,6 +660,12 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
 .ins b { display: block; font-size: 1rem; line-height: 1.3; }
 .ins p { margin-top: 6px; font-size: .9rem; color: var(--ink-2); }
 .ins p.fix { color: var(--ink); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; }
+
+/* ── Photo compare ───────────────────────────────────────────────────────── */
+.cmp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.cmp-grid .in { min-height: 42px; font-size: .9rem; margin-bottom: 8px; padding: 0 8px; }
+.cmp-slot { border-style: solid; }
+.seg button small { font-weight: 700; color: var(--ink-3); margin-left: 2px; }
 </style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></symbol>
@@ -884,6 +890,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
       <h2 class="sec-h">Progress photos</h2>
       <p class="small muted" style="margin-bottom:10px">Sunday morning, same spot, same light.</p>
       <div class="photos" id="photos"></div>
+    </section>
+    <section>
+      <h2 class="sec-h">Compare photos</h2>
+      <div class="card" id="p-compare"></div>
     </section>
     <section>
       <h2 class="sec-h">History</h2>
@@ -1191,6 +1201,7 @@ const PhotoDB = (() => {
     available: async () => !!(await open()),
     save: (id, payload) => run('readwrite', s => { s.put(Object.assign({ id }, payload)); }, false),
     get: (id) => run('readonly', s => s.get(id), null).then(v => v || null),
+    keys: () => run('readonly', s => s.getAllKeys(), []).then(v => Array.isArray(v) ? v : []),
     remove: (id) => run('readwrite', s => { s.delete(id); }, false),
     clear: () => run('readwrite', s => { s.clear(); }, false)
   };
@@ -1954,6 +1965,197 @@ const EXERCISES_DB = [
 ];
 
 'use strict';
+/* ═══ Library entries for every exercise in your teacher's program ═══════════
+ * Entry ids match the workout exercise ids, so Train can link straight here.
+ * Written as general technique guidance. Where the sheet was unclear the entry
+ * carries a note, and your teacher's setup wins. */
+
+const PROG_STEP = 'All sets are 4 × 15. When you hit 15 reps on every set with about 1 to 2 reps left, add the smallest weight jump next session. If form slips, stay at the same weight.';
+
+const PROGRAM_DB = [
+  /* ── Shoulders + traps ── */
+  { id: 'sh-lat-db', name: 'Seated dumbbell lateral raise', muscles: ['shoulders'], primary: 'Side deltoid (shoulder width)', secondary: 'Supraspinatus, upper traps',
+    cues: ['Lead with the elbows, hands just below elbow height', 'Raise to shoulder height and stop', 'Sit tall and lower over 2 seconds'],
+    mistakes: ['Swinging the torso to get the weight up', 'Shrugging the traps toward the ears', 'Lifting well above shoulder height', 'Weights so heavy the reps turn into jerks'],
+    alternatives: { machine: 'Lateral raise machine', cable: 'Single-arm cable lateral raise' } },
+  { id: 'sh-lat-cable', name: 'Single-arm cable lateral raise', muscles: ['shoulders'], primary: 'Side deltoid', secondary: 'Supraspinatus, upper traps',
+    cues: ['Stand side-on to the stack with the cable crossing in front of you', 'Slight elbow bend, lead with the elbow', 'Pause 1 second at shoulder height, lower slowly'],
+    mistakes: ['Leaning away to throw the weight up', 'Letting the cable go slack at the bottom', 'Raising the hand higher than the elbow'],
+    alternatives: { machine: 'Lateral raise machine', dumbbell: 'Seated dumbbell lateral raise' } },
+  { id: 'sh-press-mach', name: 'Machine shoulder press (from behind)', muscles: ['shoulders'], primary: 'Front and side deltoids', secondary: 'Triceps, upper chest',
+    cues: ['Set the seat so the handles start at about ear height', 'Back on the pad, press up without shrugging', 'Lower over 2 seconds until upper arms are about parallel to the floor', 'If the position pinches your shoulders, stop and ask your teacher to adjust the seat'],
+    mistakes: ['Pushing the head forward to get under the handles', 'Arching the lower back off the pad', 'Locking the elbows hard at the top', 'Bouncing at the bottom'],
+    note: 'The sheet says "from behind". Use the setup your teacher showed you.',
+    alternatives: { dumbbell: 'Seated dumbbell shoulder press', machine: 'Front-facing shoulder press machine' } },
+  { id: 'sh-press-single', name: 'Single-arm machine shoulder press', muscles: ['shoulders'], primary: 'Front and side deltoids', secondary: 'Triceps, core (to resist tilting)',
+    cues: ['Start with your weaker arm and match the reps on the other side', 'Brace the abs so the torso stays upright', 'Press straight up and lower for 2 seconds'],
+    mistakes: ['Leaning sideways away from the working arm', 'Doing more reps with the stronger side', 'Shrugging at the top'],
+    alternatives: { dumbbell: 'Single-arm dumbbell press' } },
+  { id: 'sh-front-cable', name: 'Cable front raise', muscles: ['shoulders'], primary: 'Front deltoid', secondary: 'Upper chest',
+    cues: ['Face away from the cable with the handle between or beside your legs', 'Raise to eye level with a slight elbow bend', 'Keep your ribs down and lower slowly'],
+    mistakes: ['Leaning back to swing it up', 'Raising above eye level', 'Using momentum from the knees'],
+    note: 'Your front delts already get plenty from pressing. If they feel fatigued or sore, this is the first set you can cut.',
+    alternatives: { dumbbell: 'Dumbbell front raise' } },
+  { id: 'sh-rear-db', name: 'Bent-over dumbbell rear-delt raise', muscles: ['shoulders'], primary: 'Rear deltoid', secondary: 'Rhomboids, middle traps',
+    cues: ['Hinge until your chest is low, back flat', 'Think "elbows out and back", not "lift the weight"', 'Squeeze for 1 second and lower slowly'],
+    mistakes: ['Turning it into a row by pulling the elbows behind the body', 'Using leg and hip momentum', 'Rounding the back'],
+    alternatives: { machine: 'Reverse pec deck', cable: 'Cable rear-delt fly' } },
+  { id: 'sh-shrug-db', name: 'Standing dumbbell shrug', muscles: ['traps'], primary: 'Upper traps', secondary: 'Forearms (grip)',
+    cues: ['Arms straight at your sides, lift the shoulders straight up', 'Hold 1 second at the top, lower slowly', 'Keep the head neutral, do not poke the chin forward'],
+    mistakes: ['Rolling the shoulders in circles', 'Bending the elbows to help lift', 'Short range: not lowering fully'],
+    alternatives: { machine: 'Shrug machine', cable: 'Cable shrug' } },
+  { id: 'sh-shrug-cable', name: 'Cable shrug', muscles: ['traps'], primary: 'Upper traps', secondary: 'Forearms (grip)',
+    cues: ['Same movement as the dumbbell shrug', 'The cable keeps tension at the bottom, so use the full stretch', 'Hold 1 second at the top'],
+    mistakes: ['Rolling the shoulders', 'Bending the elbows', 'Jerking the weight up'],
+    alternatives: { dumbbell: 'Standing dumbbell shrug' } },
+
+  /* ── Back + triceps + lower back + neck ── */
+  { id: 'bk-pulldown', name: 'Wide-grip lat pulldown (seated, from the front)', muscles: ['back'], primary: 'Lats (width)', secondary: 'Biceps, rear delts, teres major',
+    cues: ['Lean back slightly with the chest up', 'Pull the elbows down toward your ribs, not the bar to your neck', 'Let the lats stretch at the top, then control the way up for 2 seconds'],
+    mistakes: ['Pulling with the hands and biceps instead of the elbows', 'Swinging the torso', 'Shrugging into the pull', 'Cutting the stretch short at the top'],
+    alternatives: { machine: 'Pulldown machine with neutral grip', cable: 'Close-grip pulldown' } },
+  { id: 'bk-pullover-mach', name: 'Machine pullover', muscles: ['back'], primary: 'Lats', secondary: 'Triceps (long head), teres major, chest',
+    cues: ['Line your shoulder joint up with the machine axis', 'Arms almost straight, push the elbows down and back', 'Squeeze the lats at the bottom and return to a big stretch'],
+    mistakes: ['Bending the elbows so it becomes a press', 'Arching the lower back at the stretch', 'Using momentum'],
+    alternatives: { cable: 'Straight-arm cable pulldown', dumbbell: 'Dumbbell pullover' } },
+  { id: 'bk-pullover-cable', name: 'Cable pullover', muscles: ['back'], primary: 'Lats', secondary: 'Triceps (long head), teres major',
+    cues: ['Hinge slightly forward with the rope or bar at head height', 'Keep the arms nearly straight and sweep them down toward your thighs', 'Ribs down, lats do the work'],
+    mistakes: ['Bending the elbows and pushing with the triceps', 'Standing too upright so the cable pulls your shoulders up', 'Rushing the return'],
+    alternatives: { machine: 'Machine pullover' } },
+  { id: 'bk-pullup', name: 'Pull-ups', muscles: ['back'], primary: 'Lats, upper back', secondary: 'Biceps, rear delts, forearms',
+    cues: ['Start from a full hang with the shoulder blades pulled down', 'Pull the elbows to your sides until the chin clears the bar', 'Lower for 2 seconds, no kicking or kipping'],
+    mistakes: ['Half reps that never reach a full hang', 'Swinging or kipping', 'Jumping up and dropping down', 'Craning the neck to get the chin over'],
+    progression: 'The sheet says max reps. Stop each set 1 rep before form breaks. Add a rep to your total each week. When you reach 15 reps on all four sets, add weight with a belt.',
+    alternatives: { machine: 'Assisted pull-up machine', cable: 'Wide-grip lat pulldown' } },
+  { id: 'bk-tbar', name: 'T-bar row', muscles: ['back'], primary: 'Mid back (rhomboids, mid traps) and lats', secondary: 'Rear delts, biceps, lower back',
+    cues: ['Hinge at the hips with a flat back and chest up', 'Pull the elbows back and squeeze the shoulder blades together', 'Keep the head in line with the spine'],
+    mistakes: ['Rounding the lower back', 'Standing up as you pull', 'Jerking the weight with the hips', 'Elbows flaring too wide'],
+    alternatives: { machine: 'Chest-supported row machine', dumbbell: 'Chest-supported dumbbell row', cable: 'Seated cable row' } },
+  { id: 'bk-row-db', name: 'Single-arm bent-over dumbbell row', muscles: ['back'], primary: 'Lats and mid back', secondary: 'Biceps, rear delts',
+    cues: ['One hand and one knee on a bench, back flat', 'Pull the elbow toward your hip, not up toward the shoulder', 'Stretch fully at the bottom without twisting'],
+    mistakes: ['Twisting the torso to move the weight', 'Using momentum', 'Pulling with the arm only'],
+    alternatives: { machine: 'Single-arm row machine', cable: 'Single-arm cable row' } },
+  { id: 'tr-lying-mach', name: 'Lying triceps extension (machine)', muscles: ['triceps'], primary: 'Triceps (all three heads)', secondary: 'Forearms',
+    cues: ['Elbows fixed and pointing forward', 'Full stretch at the bottom, full lockout at the top', 'Lower for 2 seconds'],
+    mistakes: ['Elbows flaring out', 'Shoulders drifting forward', 'Bouncing at the bottom', 'Stopping short of lockout'],
+    alternatives: { dumbbell: 'Dumbbell lying extension', cable: 'Cable overhead extension' } },
+  { id: 'tr-lying-bb', name: 'Lying barbell triceps extension', muscles: ['triceps'], primary: 'Triceps (long head especially)', secondary: 'Forearms',
+    cues: ['Elbows point at the ceiling and stay fixed', 'Lower the bar to your forehead, or just behind your head', 'Use a weight you can control, because the bar is near your face'],
+    mistakes: ['Elbows flaring wide', 'Letting the elbows travel so it becomes a press', 'Going heavy without a spotter'],
+    alternatives: { machine: 'Lying triceps machine', dumbbell: 'Dumbbell lying extension', cable: 'Cable overhead extension' } },
+  { id: 'tr-press-bb', name: 'Barbell press machine (triceps)', muscles: ['triceps'], primary: 'Triceps', secondary: 'Chest, front delts',
+    cues: ['Narrow grip with the elbows tight to the body', 'Press all the way to lockout', 'Lower slowly, do not drop'],
+    mistakes: ['Elbows flaring', 'Shoulders rising toward the ears', 'Stopping short of lockout'],
+    note: 'I was not sure what this machine is called on your sheet, so this is a best guess (a close-grip press). If your teacher set it up differently, follow that.',
+    alternatives: { dumbbell: 'Close-grip dumbbell press', cable: 'Rope pushdown' } },
+  { id: 'tr-cable-single', name: 'Single-arm bent-over cable triceps extension', muscles: ['triceps'], primary: 'Triceps', secondary: 'Rear delts (stabilising)',
+    cues: ['Upper arm locked against your body and parallel to the floor', 'Extend the elbow fully and squeeze for 1 second', 'Same reps on both arms'],
+    mistakes: ['Moving the upper arm to help', 'Swinging the torso', 'Not locking out'],
+    alternatives: { dumbbell: 'Dumbbell kickback', cable: 'Single-arm pushdown' } },
+  { id: 'bk-lower', name: 'Lower back', muscles: ['back'], primary: 'Spinal erectors (lower back)', secondary: 'Glutes, hamstrings',
+    cues: ['Move slowly in both directions', 'Come up only to a straight line from head to hips', 'Keep it light, you are building support, not chasing weight'],
+    mistakes: ['Jerking or swinging up', 'Over-arching past a straight line at the top', 'Going heavy too soon'],
+    note: 'The sheet only says "lower back". Ask your teacher which exact movement (usually a back extension) and copy that.',
+    alternatives: { machine: 'Back extension machine', dumbbell: 'Back extension holding a light plate' } },
+  { id: 'bk-neck', name: 'Neck', muscles: ['neck'], primary: 'Neck flexors and extensors', secondary: 'Upper traps',
+    cues: ['Light weight and slow reps', 'Stop well short of failure', 'Stop at once if you feel pinching, tingling or dizziness'],
+    mistakes: ['Jerking the head', 'Going heavy', 'Holding your breath'],
+    note: 'The sheet only says "neck". Use the movement and weight your teacher showed you. The neck is the one place to be extra careful.',
+    alternatives: { machine: 'Neck machine' } },
+
+  /* ── Legs + calves ── */
+  { id: 'lg-bike', name: 'Bicycle warm-up (5 minutes)', muscles: ['legs'], primary: 'Quads, hamstrings, calves (warm-up)', secondary: 'Heart and lungs',
+    cues: ['Easy pace, you should be able to talk', 'Raise the heart rate a little, no need to sweat'],
+    mistakes: ['Going so hard you arrive at the squat already tired'],
+    progression: 'Nothing to progress. Five easy minutes, then start your lifts.', alternatives: {} },
+  { id: 'lg-squat-mach', name: 'Squat machine', muscles: ['legs'], primary: 'Quads, glutes', secondary: 'Hamstrings, adductors, core',
+    cues: ['Feet about shoulder width, slightly forward on the platform', 'Go as deep as you can control with the heels down', 'Knees track over the toes, push through the middle of the foot'],
+    mistakes: ['Heels lifting off the floor', 'Knees caving inward', 'Bouncing out of the bottom', 'Half reps to use more weight'],
+    alternatives: { machine: 'Hack squat or leg press', dumbbell: 'Goblet squat' } },
+  { id: 'lg-hack', name: 'Hack squat', muscles: ['legs'], primary: 'Quads', secondary: 'Glutes',
+    cues: ['Back and hips flat on the pad', 'Feet lower and closer together hit the quads more, higher hits glutes more', 'Lower until the thighs are just below parallel, stay in control'],
+    mistakes: ['Bouncing at the bottom', 'Heels lifting', 'Locking the knees hard at the top', 'Hips lifting off the pad'],
+    alternatives: { machine: 'Leg press', dumbbell: 'Goblet squat' } },
+  { id: 'lg-press', name: 'Leg press', muscles: ['legs'], primary: 'Quads, glutes', secondary: 'Hamstrings, adductors',
+    cues: ['Feet shoulder width in the middle of the platform', 'Lower until the knees reach about 90 degrees without the lower back lifting', 'Press up without locking the knees'],
+    mistakes: ['Lower back rounding off the pad', 'Knees collapsing inward', 'Locking out hard under load', 'Heavy weight with a tiny range'],
+    alternatives: { machine: 'Hack squat', dumbbell: 'Bulgarian split squat' } },
+  { id: 'lg-ext', name: 'Leg extension', muscles: ['legs'], primary: 'Quads', secondary: 'None, it is an isolation move',
+    cues: ['Pad just above the ankles, back against the seat', 'Squeeze at the top for 1 second', 'Lower for 2 to 3 seconds'],
+    mistakes: ['Swinging or kicking the weight up', 'Hips lifting off the seat', 'Dropping the weight down fast'],
+    note: 'If your knees complain, lower the weight and shorten the range at the top.',
+    alternatives: {} },
+  { id: 'lg-curl', name: 'Leg curl (seated or lying)', muscles: ['legs'], primary: 'Hamstrings', secondary: 'Calves',
+    cues: ['Hips pressed into the pad', 'Curl smoothly and squeeze at the end', 'Lower over 2 to 3 seconds, do not let the stack drop'],
+    mistakes: ['Hips rising off the pad', 'Jerking the weight', 'Half range of motion'],
+    alternatives: { machine: 'Seated or lying leg curl', dumbbell: 'Romanian deadlift' } },
+  { id: 'lg-lunge', name: 'Walking lunges', muscles: ['legs'], primary: 'Quads, glutes', secondary: 'Hamstrings, adductors',
+    cues: ['Long step, torso upright', 'Back knee drops to just above the floor', 'Push through the front heel and keep your balance'],
+    mistakes: ['Steps too short so the knee travels far over the toes', 'Leaning forward', 'Front knee caving inward', 'Rushing and losing balance'],
+    alternatives: { machine: 'Leg press', dumbbell: 'Dumbbell split squat' } },
+  { id: 'lg-adductor', name: 'Inner-thigh (adductor) machine', muscles: ['legs'], primary: 'Adductors (inner thigh)', secondary: 'Glute medius (stabilising)',
+    cues: ['Sit tall with the back against the pad', 'Squeeze the legs together smoothly', 'Control the return, do not let the stack slam'],
+    mistakes: ['Slamming the weight stack', 'Going so heavy the reps get jerky', 'Leaning forward'],
+    alternatives: { cable: 'Cable hip adduction' } },
+  { id: 'lg-calf', name: 'Calf raise', muscles: ['legs'], primary: 'Calves (gastrocnemius and soleus)', secondary: 'Ankle stabilisers',
+    cues: ['Full stretch at the bottom for 1 second', 'Rise as high as you can and pause for 1 second', 'Lower over 2 seconds; straight knees for the gastrocnemius, bent knees for the soleus'],
+    mistakes: ['Bouncing out of the stretch', 'Short range of motion', 'Rushing the reps'],
+    alternatives: { machine: 'Seated calf raise', dumbbell: 'Single-leg calf raise on a step' } },
+
+  /* ── Chest + biceps + abs ── */
+  { id: 'ch-press-mach', name: 'Machine chest press', muscles: ['chest'], primary: 'Chest', secondary: 'Front delts, triceps',
+    cues: ['Set the seat so the handles are at mid-chest height', 'Shoulder blades back and down against the pad', 'Press without shrugging, lower with control'],
+    mistakes: ['Shoulders rolling forward', 'Elbows flared straight out to the sides', 'Bouncing at the bottom', 'Lifting the hips or back off the pad'],
+    alternatives: { dumbbell: 'Dumbbell bench press', cable: 'Standing cable press' } },
+  { id: 'ch-fly-db', name: 'Dumbbell chest fly', muscles: ['chest'], primary: 'Chest', secondary: 'Front delts',
+    cues: ['Keep a slight, fixed bend in the elbows', 'Open until you feel a chest stretch, not past shoulder level', 'Hug the weights together over the chest without clanking them'],
+    mistakes: ['Bending and straightening the elbows so it becomes a press', 'Going too deep and stressing the shoulders', 'Heavy weights that wreck the form'],
+    alternatives: { machine: 'Pec deck', cable: 'Cable fly' } },
+  { id: 'ch-cable-low', name: 'Lower-chest cable fly', muscles: ['chest'], primary: 'Lower chest', secondary: 'Front delts',
+    cues: ['Cables set high, step forward with a slight lean', 'Sweep the hands down and together in front of the lower chest', 'Slow on the way back, feel the stretch'],
+    mistakes: ['Shrugging the shoulders', 'Bending the elbows into a press', 'Leaning too far forward'],
+    alternatives: { machine: 'Pec deck', dumbbell: 'Decline dumbbell fly' } },
+  { id: 'ch-up-fly', name: 'Upper-chest machine fly', muscles: ['chest'], primary: 'Upper chest', secondary: 'Front delts',
+    cues: ['Set the handles to chest height or slightly above', 'Keep the shoulder blades back and squeeze for 1 second', 'Do not let the handles pull your shoulders forward on the return'],
+    mistakes: ['Shoulders rolling forward', 'Using momentum', 'Letting the stack touch down between reps'],
+    alternatives: { dumbbell: 'Incline dumbbell fly', cable: 'Low-to-high cable fly' } },
+  { id: 'ch-up-smith', name: 'Upper-chest Smith press', muscles: ['chest'], primary: 'Upper chest', secondary: 'Front delts, triceps',
+    cues: ['Bench at 30 to 35 degrees, no steeper', 'Shoulder blades pinned back, bar to the upper chest over 2 seconds', 'Set the safety stops before your first rep'],
+    mistakes: ['Bench too steep so it becomes a shoulder press', 'Elbows flaring wide', 'Bouncing the bar off the chest', 'Lifting the hips'],
+    alternatives: { machine: 'Incline chest press machine', dumbbell: 'Incline dumbbell press' } },
+  { id: 'bi-db', name: 'Standing dumbbell curl (both arms)', muscles: ['biceps'], primary: 'Biceps', secondary: 'Brachialis, forearms',
+    cues: ['Elbows pinned to your sides', 'Curl up, squeeze at the top, lower over 2 seconds', 'Stand tall and do not swing'],
+    mistakes: ['Swinging the body', 'Elbows drifting forward', 'Cutting the range at the bottom'],
+    alternatives: { machine: 'Biceps curl machine', cable: 'Cable curl' } },
+  { id: 'bi-preacher', name: 'Single-arm preacher dumbbell curl', muscles: ['biceps'], primary: 'Biceps (lower part)', secondary: 'Brachialis',
+    cues: ['Armpit resting against the top of the pad', 'Lower to a full stretch but do not drop the weight', 'Squeeze at the top without lifting the elbow'],
+    mistakes: ['Dropping fast at the bottom, which stresses the biceps tendon', 'Lifting the elbow off the pad', 'Half reps'],
+    note: 'Please check this pairing against your sheet, I was not fully sure of it.',
+    alternatives: { machine: 'Preacher curl machine', cable: 'Cable preacher curl' } },
+  { id: 'bi-bent', name: 'Bent-over single dumbbell curl', muscles: ['biceps'], primary: 'Biceps', secondary: 'Brachialis',
+    cues: ['Bend forward with the arm hanging straight down', 'The elbow stays still, only the forearm moves', 'Squeeze at the top and lower slowly'],
+    mistakes: ['Swinging the elbow back and forth', 'Using the shoulder to lift', 'Rushing the lowering'],
+    alternatives: { cable: 'Single-arm cable curl' } },
+  { id: 'bi-bb', name: 'Standing barbell curl', muscles: ['biceps'], primary: 'Biceps', secondary: 'Brachialis, forearms',
+    cues: ['Grip shoulder width, elbows at your sides', 'Do not lean back', 'Lower over 2 seconds'],
+    mistakes: ['Leaning back and swinging the hips', 'Elbows drifting forward', 'Wrists bending'],
+    alternatives: { dumbbell: 'Dumbbell curl', cable: 'Cable bar curl' } },
+  { id: 'ab-main', name: 'Abs', muscles: ['abs'], primary: 'Abs (rectus abdominis)', secondary: 'Obliques, hip flexors',
+    cues: ['Slow reps, exhale at the top', 'Curl the ribs toward the hips instead of pulling with the arms', 'Stay in control for all 25 reps'],
+    mistakes: ['Pulling on the neck', 'Swinging or using momentum', 'Rushing the reps'],
+    progression: 'When 25 slow reps feels easy on all four sets, add a light weight or switch to a cable or machine crunch.',
+    note: 'The sheet only says "abs". Use the movement your teacher uses.',
+    alternatives: { machine: 'Ab crunch machine', cable: 'Cable crunch' } }
+];
+
+PROGRAM_DB.forEach(e => { e.program = true; if (!e.progression) e.progression = PROG_STEP; });
+
+/* the old general entries that duplicate program exercises are replaced by the ones above */
+const _DUP = ['wide-lat-pulldown', 'incline-smith-press', 'seated-db-lateral', 'tbar-low-row', 'standing-calf-raise'];
+for (let i = EXERCISES_DB.length - 1; i >= 0; i--) if (_DUP.indexOf(EXERCISES_DB[i].id) >= 0) EXERCISES_DB.splice(i, 1);
+EXERCISES_DB.unshift.apply(EXERCISES_DB, PROGRAM_DB);
+
+'use strict';
 /* ═══ ui: helpers, theme, hero photo, rings, chart ═══════════════════════════ */
 
 const Utils = {
@@ -2406,7 +2608,7 @@ const WorkoutView = (() => {
           '<input class="in set-in" type="text" inputmode="numeric" aria-label="Set ' + (j + 1) + ' reps in reserve" data-ex="' + i + '" data-set="' + j + '" data-f="rir" placeholder="' + ex.rir + '" value="' + Utils.esc(st.rir || '') + '">' +
           '<button type="button" class="set-done" data-action="set-done" data-ex="' + i + '" data-set="' + j + '" aria-pressed="' + !!st.done + '" aria-label="Set ' + (j + 1) + ' done">' + Utils.icon('check') + '</button></div>';
       }
-      html += '<div class="cue"><b>Cue.</b> ' + Utils.esc(ex.cue) + '</div></div></div></div></article>';
+      html += '<div class="cue"><b>Cue.</b> ' + Utils.esc(ex.cue) + '</div>' + (EXERCISES_DB.some(x => x.id === ex.id) ? '<button type="button" class="link" data-action="lib-jump" data-id="' + Utils.esc(ex.id) + '" style="margin-top:8px">How to do it</button>' : '') + '</div></div></div></article>';
     });
     html += '</div><div class="btn-row" style="margin-top:18px">' + (log.completed
       ? '<button type="button" class="btn btn-ghost" data-action="reopen">Reopen session</button>'
@@ -2680,6 +2882,7 @@ const ProgressView = {
     }).join('') : '<div class="empty">No measurements yet. Your first entry starts the trend.</div>';
 
     ProgressView.renderPhotos();
+    ProgressView.renderCompare();
   },
 
   renderPhotos() {
@@ -2692,6 +2895,36 @@ const ProgressView = {
     }));
   },
 
+  cmp: { slot: 'front', a: null, b: null, auto: true },
+  /** Pick a pose, then two dates, and see them side by side. */
+  async renderCompare() {
+    const box = Utils.el('p-compare'); if (!box) return;
+    const keys = await PhotoDB.keys(), by = {};
+    keys.forEach(k => { const m = /^(front|back|side|arms)_(\d{4}-\d{2}-\d{2})$/.exec(String(k)); if (m) (by[m[1]] = by[m[1]] || []).push(m[2]); });
+    Object.keys(by).forEach(s => by[s].sort());
+    const SL = [['front', 'Front'], ['back', 'Back'], ['side', 'Side'], ['arms', 'Arms']], c = ProgressView.cmp;
+    if (!SL.some(s => s[0] === c.slot)) c.slot = 'front';
+    const dates = by[c.slot] || [];
+    if (c.auto || dates.indexOf(c.a) < 0) c.a = dates[0] || null;
+    if (c.auto || dates.indexOf(c.b) < 0) c.b = dates[dates.length - 1] || null;
+    const seg = '<div class="seg" role="group" aria-label="Pose">' + SL.map(s => '<button type="button" data-action="cmp-slot" data-slot="' + s[0] + '" aria-pressed="' + (c.slot === s[0]) + '">' + s[1] + (by[s[0]] ? ' <small class="num">' + by[s[0]].length + '</small>' : '') + '</button>').join('') + '</div>';
+    if (dates.length < 2) {
+      box.innerHTML = seg + '<p class="small muted" style="margin-top:12px">' + (dates.length ? 'You have one ' + c.slot + ' photo. Take the same pose on another day, in the same spot and light, and you can compare them here.' : 'No ' + c.slot + ' photos yet. Add one above, then another on a different day to compare.') + '</p>';
+      return;
+    }
+    const opts = sel => dates.map(d => '<option value="' + d + '"' + (d === sel ? ' selected' : '') + '>' + Dates.fmt(d, { day: 'numeric', month: 'short', year: 'numeric' }) + '</option>').join('');
+    const apart = Dates.diff(c.a, c.b);
+    box.innerHTML = seg + '<div class="cmp-grid"><div><select class="in" id="cmp-a" aria-label="Earlier photo date">' + opts(c.a) + '</select><div class="slot cmp-slot" id="cmp-img-a"></div></div>' +
+      '<div><select class="in" id="cmp-b" aria-label="Later photo date">' + opts(c.b) + '</select><div class="slot cmp-slot" id="cmp-img-b"></div></div></div>' +
+      '<p class="small muted" style="margin-top:10px">' + (apart === 0 ? 'Same day.' : Math.abs(apart) + ' days apart') + '</p>';
+    [['a', c.a], ['b', c.b]].forEach(([k, d]) => PhotoDB.get(c.slot + '_' + d).then(rec => {
+      const n = Utils.el('cmp-img-' + k);
+      if (n) n.innerHTML = rec && rec.dataUrl ? '<img alt="' + c.slot + ' photo from ' + d + '" src="' + rec.dataUrl + '">' : '<span>Photo not found</span>';
+    }));
+  },
+  setCmp(which, v) { ProgressView.cmp[which] = v; ProgressView.cmp.auto = false; ProgressView.renderCompare(); },
+  setCmpSlot(s) { ProgressView.cmp.slot = s; ProgressView.cmp.a = null; ProgressView.cmp.b = null; ProgressView.cmp.auto = true; ProgressView.renderCompare(); },
+
   async addPhoto(file) {
     const slot = ProgressView.slot; if (!file || !slot) return;
     try {
@@ -2699,7 +2932,7 @@ const ProgressView = {
       const payload = { dataUrl: url, savedAt: Date.now(), slot, date: today };
       const a = await PhotoDB.save('latest_' + slot, payload);
       await PhotoDB.save(slot + '_' + today, payload);
-      ProgressView.renderPhotos();
+      ProgressView.renderPhotos(); ProgressView.renderCompare();
       Utils.toast(a ? 'Photo saved' : 'This browser would not save the photo');
     } catch (e) { Utils.toast(e.message || 'Could not use that photo'); }
   },
@@ -2776,27 +3009,34 @@ const ReviewView = {
 };
 
 const LibraryView = {
-  filter: 'all', openId: null,
+  filter: 'program', openId: null,
   render() {
-    const groups = ['all'].concat(EXERCISES_DB.reduce((a, e) => { e.muscles.forEach(m => { if (a.indexOf(m) < 0) a.push(m); }); return a; }, []));
-    Utils.el('lib-filters').innerHTML = groups.map(g => '<button type="button" data-action="lib-filter" data-g="' + g + '" aria-pressed="' + (LibraryView.filter === g) + '">' + (g === 'all' ? 'All' : g.charAt(0).toUpperCase() + g.slice(1)) + '</button>').join('');
-    const list = EXERCISES_DB.filter(e => LibraryView.filter === 'all' || e.muscles.indexOf(LibraryView.filter) >= 0);
+    const groups = ['program', 'all'].concat(EXERCISES_DB.reduce((a, e) => { e.muscles.forEach(m => { if (a.indexOf(m) < 0) a.push(m); }); return a; }, []));
+    Utils.el('lib-filters').innerHTML = groups.map(g => '<button type="button" data-action="lib-filter" data-g="' + g + '" aria-pressed="' + (LibraryView.filter === g) + '">' + (g === 'program' ? 'Your program' : g === 'all' ? 'All' : g.charAt(0).toUpperCase() + g.slice(1)) + '</button>').join('');
+    const f = LibraryView.filter;
+    const list = EXERCISES_DB.filter(e => f === 'all' || (f === 'program' ? e.program : e.muscles.indexOf(f) >= 0));
     Utils.el('lib-list').innerHTML = list.map(e => {
       const open = LibraryView.openId === e.id;
       const alt = e.alternatives || {};
-      return '<article class="lib ex' + (open ? ' open' : '') + '"><button type="button" class="ex-head" data-action="lib-open" data-id="' + Utils.esc(e.id) + '" aria-expanded="' + open + '">' +
+      return '<article class="lib ex' + (open ? ' open' : '') + '" id="lib-' + Utils.esc(e.id) + '"><button type="button" class="ex-head" data-action="lib-open" data-id="' + Utils.esc(e.id) + '" aria-expanded="' + open + '">' +
         '<span class="ex-t"><b>' + Utils.esc(e.name) + '</b><span>' + Utils.esc(e.primary) + '</span></span>' + Utils.icon('chev', 'chev') + '</button>' +
         '<div class="ex-body"><div class="ex-in"><div class="lib-body">' +
         '<div><h4>Works</h4><p>' + Utils.esc(e.primary) + '<br><span class="muted">Also: ' + Utils.esc(e.secondary) + '</span></p></div>' +
         '<div><h4>Cues</h4><ul>' + e.cues.map(c => '<li class="c">' + Utils.esc(c) + '</li>').join('') + '</ul></div>' +
         '<div><h4>Common mistakes</h4><ul>' + e.mistakes.map(c => '<li class="m">' + Utils.esc(c) + '</li>').join('') + '</ul></div>' +
         '<div><h4>Progression</h4><p>' + Utils.esc(e.progression) + '</p></div>' +
-        '<div><h4>Swap for</h4><div class="tags">' + [['Machine', alt.machine], ['Dumbbell', alt.dumbbell], ['Cable', alt.cable]].filter(x => x[1]).map(x => '<span class="chip chip-blue">' + x[0] + ': ' + Utils.esc(x[1]) + '</span>').join('') + '</div></div>' +
+        (e.note ? '<div class="cue"><b>Note.</b> ' + Utils.esc(e.note) + '</div>' : '') +
+        ([alt.machine, alt.dumbbell, alt.cable].some(Boolean) ? '<div><h4>Swap for</h4><div class="tags">' + [['Machine', alt.machine], ['Dumbbell', alt.dumbbell], ['Cable', alt.cable]].filter(x => x[1]).map(x => '<span class="chip chip-blue">' + x[0] + ': ' + Utils.esc(x[1]) + '</span>').join('') + '</div></div>' : '') +
         '</div></div></div></article>';
     }).join('');
   },
   toggle(id) { LibraryView.openId = LibraryView.openId === id ? null : id; LibraryView.render(); },
-  setFilter(g) { LibraryView.filter = g; LibraryView.render(); }
+  setFilter(g) { LibraryView.filter = g; LibraryView.render(); },
+  /** From Train: open an exercise's entry in the library. */
+  jump(id) {
+    LibraryView.filter = 'program'; LibraryView.openId = id; Nav.go('library');
+    const n = Utils.el('lib-' + id); if (n && n.scrollIntoView) n.scrollIntoView({ behavior: 'auto', block: 'start' });
+  }
 };
 
 const SuppsView = {
@@ -3698,6 +3938,8 @@ const ACTIONS = {
   score: t => ReviewView.pick(t.dataset.group, t.dataset.v),
   'save-review': () => ReviewView.save(),
   'lib-filter': t => LibraryView.setFilter(t.dataset.g),
+  'cmp-slot': t => ProgressView.setCmpSlot(t.dataset.slot),
+  'lib-jump': t => LibraryView.jump(t.dataset.id),
   'lib-open': t => LibraryView.toggle(t.dataset.id),
   'suggest-targets': () => ProfileView.suggest(),
   'save-profile': () => ProfileView.save(),
@@ -3736,7 +3978,11 @@ function wire() {
     if (t.hasAttribute && t.hasAttribute('data-target')) { t.dataset.touched = '1'; return; }
     if (/^ob-(sex|age|height|weight)$/.test(t.id || '')) Onboarding.suggest(false);
   });
-  document.addEventListener('change', e => { if (e.target.id === 'ob-sex') Onboarding.suggest(false); });
+  document.addEventListener('change', e => {
+    if (e.target.id === 'ob-sex') Onboarding.suggest(false);
+    if (e.target.id === 'cmp-a') ProgressView.setCmp('a', e.target.value);
+    if (e.target.id === 'cmp-b') ProgressView.setCmp('b', e.target.value);
+  });
   Utils.el('photo-input').addEventListener('change', e => ProgressView.addPhoto(e.target.files[0]));
   Utils.el('hero-input').addEventListener('change', e => { if (e.target.files[0]) Hero.set(e.target.files[0]); });
   Utils.el('restore-input').addEventListener('change', e => {
