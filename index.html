@@ -653,6 +653,13 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
 .wk tbody th { text-align: left; font-weight: 600; white-space: normal; }
 .wk tbody tr:last-child th, .wk tbody tr:last-child td { border-bottom: 0; }
 .coach-row { grid-template-columns: 92px 1fr; }
+
+/* ── Insights ────────────────────────────────────────────────────────────── */
+.ins + .ins { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.ins .chip { margin-bottom: 8px; }
+.ins b { display: block; font-size: 1rem; line-height: 1.3; }
+.ins p { margin-top: 6px; font-size: .9rem; color: var(--ink-2); }
+.ins p.fix { color: var(--ink); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; }
 </style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></symbol>
@@ -764,6 +771,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
         <section>
           <h2 class="sec-h">Coach</h2>
           <div class="card coach" id="coach"></div>
+        </section>
+        <section>
+          <h2 class="sec-h">What your data says</h2>
+          <div class="card" id="insights"></div>
         </section>
         <section id="wrap-sec" hidden>
           <h2 class="sec-h">Evening wrap-up</h2>
@@ -895,6 +906,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
   <!-- REVIEW -->
   <section class="view view-narrow" id="view-review" aria-label="Weekly review">
     <div class="page-h"><div><h1>Weekly review</h1><p>Three minutes every Sunday.</p></div></div>
+    <section>
+      <h2 class="sec-h">What your data says</h2>
+      <div class="card" id="rev-insights"></div>
+    </section>
     <section>
       <h2 class="sec-h">Your last four weeks</h2>
       <div id="rev-weeks"></div>
@@ -2279,6 +2294,7 @@ const Dashboard = {
     Checkin.render('tiles', Checkin.main());
     Coach.renderAll();
     Dashboard.renderWrap();
+    Insights.render();
 
     /* phase */
     const m = AppState.getMeasurements();
@@ -2720,6 +2736,7 @@ const ReviewView = {
     const s = ReviewView.suggest();
     const sel = ReviewView.sel;
     const rw = Utils.el('rev-weeks'); if (rw) rw.innerHTML = Trends.weeksHtml(4);
+    Insights.render();
     if (sel.training == null) sel.training = Math.min(6, s.trained);
     if (sel.protein == null) sel.protein = s.protHit;
     Utils.el('hint-training').textContent = 'Your log: ' + s.trained + ' sessions in the last 7 days (target ' + s.sessions + ')';
@@ -3386,6 +3403,138 @@ const Trends = {
 };
 
 'use strict';
+/* ═══ insights: the coach reads what you logged ══════════════════════════════
+ * Rule based and local. It looks at the last 7 finished days (today is left out
+ * because it is still half logged), finds what matters most, says why, and
+ * gives one concrete fix. Tone 'warn' = act on it, 'good' = keep going. */
+
+const Insights = {
+  showAll: false,
+
+  _days() { const t = Dates.today(), out = []; for (let i = 1; i <= 7; i++) out.push(Dates.add(t, -i)); return out; },
+  _round50: n => Math.round(n / 50) * 50,
+
+  compute() {
+    const out = [], today = Dates.today(), tg = Targets.get(), days = Insights._days();
+    const nut = days.map(d => ({ d, n: dayNutrition(d) })).filter(x => x.n.cal > 0);
+    const logged = nut.length;
+    const avgCal = logged ? nut.reduce((a, x) => a + x.n.cal, 0) / logged : 0;
+    const avgProt = logged ? nut.reduce((a, x) => a + x.n.prot, 0) / logged : 0;
+    const st = Trends.status();
+    const add = (id, tone, sev, title, why, fix) => out.push({ id, tone, sev, title, why, fix: fix || '' });
+
+    /* 1. are you logging enough for any of this to mean something? */
+    if (logged > 0 && logged < 4) {
+      add('logging', 'warn', 60, 'Only ' + logged + ' of the last 7 days have food logged',
+        'With fewer than four days I would be guessing about your protein and calories.',
+        'Rough entries count. A quick meal chip takes one tap.');
+    }
+
+    if (logged >= 3) {
+      /* 2. protein */
+      const pr = avgProt / tg.protein, hit = nut.filter(x => x.n.prot >= tg.protein * 0.9).length, gap = Math.round(tg.protein - avgProt);
+      if (pr < 0.85) {
+        const fix = gap >= 45 ? 'A shake (about 30 g) plus 250 g skyr (about 27 g) each day would close it.'
+          : gap >= 25 ? 'One shake (about 30 g) or 250 g skyr (about 27 g) a day would close it.'
+          : '3 eggs (about 19 g) or 150 g quark (about 18 g) a day would close it.';
+        add('protein', 'warn', 80, 'Protein averages ' + Math.round(avgProt) + ' g, your target is ' + tg.protein + ' g',
+          'You hit it on ' + hit + ' of ' + logged + ' logged days, so you are about ' + gap + ' g short per day.', fix + ' Check your labels for the exact amounts.');
+      } else if (pr >= 0.95) {
+        add('protein-ok', 'good', 22, 'Protein is on point', 'Your average is ' + Math.round(avgProt) + ' g against a target of ' + tg.protein + ' g.', '');
+      }
+
+      /* 3. calories, and how they connect to the scale */
+      const cr = avgCal / tg.kcal, calGap = Insights._round50(tg.kcal - avgCal);
+      const goingUp = st.target != null ? st.target > 0 : true;
+      if (st.state === 'slow' && goingUp && cr < 0.95) {
+        add('cal-slow', 'warn', 90, 'You are gaining slower than planned, and your calories are the likely reason',
+          'You average ' + Utils.fmt(avgCal) + ' kcal against a target of ' + Utils.fmt(tg.kcal) + '. That is about ' + Utils.fmt(Math.max(50, calGap)) + ' kcal a day short.',
+          'Hit your calorie target on most days first. Only raise the target if the scale still stalls afterwards.');
+      } else if (st.state === 'slow' && goingUp && cr >= 0.95) {
+        add('cal-slow2', 'warn', 75, 'You eat what you planned, but the scale is gaining slower than planned',
+          'Calories average ' + Utils.fmt(avgCal) + ' kcal, right at the target.', st.advice || 'Give it another week.');
+      } else if (st.state === 'fast' && goingUp && cr > 1.08) {
+        add('cal-fast', 'warn', 70, 'You are gaining faster than planned and eating above target',
+          'Calories average ' + Utils.fmt(avgCal) + ' kcal against ' + Utils.fmt(tg.kcal) + '.', 'Trim about ' + Insights._round50(avgCal - tg.kcal) + ' kcal a day, or keep it if your waist is not moving.');
+      } else if (goingUp && cr < 0.85) {
+        add('cal-low', 'warn', 65, 'Calories average ' + Utils.fmt(avgCal) + ', target is ' + Utils.fmt(tg.kcal),
+          'That is about ' + Utils.fmt(calGap) + ' kcal short per day, which makes a lean bulk very slow.',
+          calGap >= 500 ? 'Add a gainer shake or one extra meal (about 600 kcal).' : calGap >= 250 ? 'Add a shake with oats and a banana (about 400 kcal).' : 'Add a snack such as nuts and a banana (about 250 kcal).');
+      } else if (cr >= 0.92 && cr <= 1.08) {
+        add('cal-ok', 'good', 24, 'Calories are close to target', 'You average ' + Utils.fmt(avgCal) + ' kcal against ' + Utils.fmt(tg.kcal) + '.', '');
+      }
+    } else if (st.state === 'slow' || st.state === 'fast') {
+      add('weight-only', 'info', 30, st.text, 'Log food for a few days and I can tell you whether calories explain it.', st.advice || '');
+    }
+
+    /* 4. weigh-ins */
+    const ser = Trends.series(), lastW = ser.length ? ser[ser.length - 1].d : null;
+    if (lastW && Dates.diff(lastW, today) >= 10) {
+      add('weighin', 'warn', 40, 'No weigh-in for ' + Dates.diff(lastW, today) + ' days', 'The trend card needs fresh data to say whether you are on plan.', 'Three mornings a week, same conditions, is enough.');
+    }
+
+    /* 5. training */
+    const logs = AppState.getWorkoutLogs(), p = AppState.getProfile() || {}, per = Math.max(2, Math.min(6, Number(p.perWeek) || 5));
+    const done7 = Object.keys(logs).filter(d => logs[d].completed && d >= Dates.add(today, -6)).length;
+    const pStart = p.startDate && Dates.diff(p.startDate, today) >= 7;
+    if (pStart && Object.keys(logs).length >= 1 && done7 < per - 1) {
+      add('sessions', 'warn', 55, done7 + ' ' + (done7 === 1 ? 'session' : 'sessions') + ' in the last 7 days, your plan is ' + per,
+        'Consistency drives more of your progress than any single session.', 'Pick the next two days now and put them in your plan. A shorter session still counts.');
+    } else if (pStart && done7 >= per) {
+      add('sessions-ok', 'good', 26, done7 + ' sessions in 7 days', 'That matches your plan of ' + per + ' a week.', '');
+    }
+    const lastBy = {};
+    Object.keys(logs).sort().forEach(d => { if (logs[d].completed) lastBy[logs[d].sessionKey] = d; });
+    if (Object.keys(lastBy).length >= 3) {
+      SESSION_ORDER.forEach(k => {
+        const d = lastBy[k]; if (!d) return;
+        const n = Dates.diff(d, today), lim = k === 'LG' ? 10 : 9;
+        if (n > lim) add('gap-' + k, 'warn', 58, CYCLE_META[k].short + ' was last trained ' + n + ' days ago', 'Muscle groups do best with a hit every 4 to 7 days.', 'Make ' + CYCLE_META[k].short + ' your next session when you are recovered.');
+      });
+    }
+
+    /* 6. recent personal bests */
+    let prs = 0;
+    Object.keys(logs).forEach(d => { if (logs[d].completed && d >= Dates.add(today, -13)) prs += Records.prs(logs[d]).length; });
+    if (prs > 0) add('prs', 'good', 28, prs + ' new ' + (prs === 1 ? 'best' : 'bests') + ' in the last two weeks', 'Your strength is moving. That is the clearest sign the plan works.', '');
+
+    /* 7. sleep, stress and motivation from your check-ins */
+    const co = days.map(d => (AppState.getCheckin(d) || {}).coach || {});
+    const poor = co.filter(c => c.sleep === 'poor').length, slept = co.filter(c => c.sleep).length;
+    if (slept >= 3 && poor >= 3) add('sleep', 'warn', 62, 'Sleep was poor on ' + poor + ' of ' + slept + ' check-ins', 'Poor sleep slows muscle gain more than a missing meal does.', 'Same bedtime for the next 5 nights, phone away 30 minutes before. After a bad night, drop the last set of each exercise.');
+    const hs = co.filter(c => c.stress === 'high').length, sn = co.filter(c => c.stress).length;
+    if (sn >= 3 && hs >= 3) add('stress', 'warn', 50, 'Stress was high on ' + hs + ' of ' + sn + ' check-ins', 'High stress slows recovery, so the same training feels harder.', 'Keep sessions shorter this week and protect your sleep.');
+    const lm = co.filter(c => c.motivation === 'low').length, mn = co.filter(c => c.motivation).length;
+    if (mn >= 3 && lm >= 3) add('motivation', 'warn', 45, 'Motivation was low on ' + lm + ' of ' + mn + ' check-ins', 'That happens. Small wins keep the habit alive.', 'Set the bar low: show up, do the first two exercises, then decide.');
+
+    return out.sort((a, b) => (a.tone === 'good') - (b.tone === 'good') || b.sev - a.sev);
+  },
+
+  /** Top n: warnings first, then good news if there is room. */
+  top(n) { return Insights.compute().slice(0, n); },
+
+  itemHtml(i) {
+    const label = { warn: 'Fix this', good: 'Going well', info: 'Note' }[i.tone];
+    const cls = { warn: 'chip chip-amber', good: 'chip', info: 'chip chip-blue' }[i.tone];
+    return '<div class="ins"><span class="' + cls + '">' + label + '</span><b>' + Utils.esc(i.title) + '</b>' +
+      (i.why ? '<p>' + Utils.esc(i.why) + '</p>' : '') + (i.fix ? '<p class="fix">' + Utils.esc(i.fix) + '</p>' : '') + '</div>';
+  },
+
+  html(max) {
+    const all = Insights.compute();
+    if (!all.length) return '<p class="small muted">Log food and weigh-ins for a few days and I will start reading your numbers here: protein, calories, training gaps, sleep and how they connect to the scale.</p>';
+    const shown = Insights.showAll || !max ? all : all.slice(0, max);
+    return shown.map(Insights.itemHtml).join('') +
+      (max && all.length > max ? '<button type="button" class="link" data-action="insights-all" style="margin-top:6px">' + (Insights.showAll ? 'Show less' : 'Show all ' + all.length) + '</button>' : '');
+  },
+
+  render() {
+    const box = Utils.el('insights'); if (box) box.innerHTML = Insights.html(3);
+    const rev = Utils.el('rev-insights'); if (rev) rev.innerHTML = Insights.html(0);
+  }
+};
+
+'use strict';
 /* ═══ app: navigation, actions, onboarding, backup, boot ═════════════════════ */
 
 const VIEWS = ['today', 'train', 'eat', 'progress', 'recovery', 'review', 'library', 'protocols', 'supps', 'profile', 'history'];
@@ -3541,6 +3690,7 @@ const ACTIONS = {
   'hist-set-done': t => HistoryView.toggleSet(Number(t.dataset.ex), Number(t.dataset.set), t),
   'hist-all': () => { HistoryView.showAll = !HistoryView.showAll; HistoryView.render(); },
   'meas-del': t => Utils.twoTap(t, 'Tap again', () => ProgressView.del(t.dataset.saved)),
+  'insights-all': () => { Insights.showAll = !Insights.showAll; Insights.render(); },
   'del-food': t => EatView.remove(t.dataset.id),
   'clear-day': t => Utils.twoTap(t, 'Tap again to clear', () => EatView.clearDay()),
   'save-measure': () => ProgressView.save(),
