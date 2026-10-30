@@ -586,6 +586,73 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
 .set.warm { grid-template-columns: 22px 1fr 44px; }
 .warm-t { font-weight: 600; color: var(--ink-2); }
 .dot.today { --_x: 0; }
+
+.supp { padding: 16px; }
+.supp + .supp, .info + #supp-log, #supp-log { margin-top: 12px; }
+#supp-log .supp + .supp { margin-top: 12px; }
+.supp-h { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 1.05rem; }
+.supp-h .ico { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+
+/* ── Quick add, entry actions, wrap-up ───────────────────────────────────── */
+.portion { margin-bottom: 10px; }
+.quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.qchip { position: relative; display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.qchip.saved { border-color: var(--primary); }
+.q-main { flex: 1; min-width: 0; text-align: left; padding: 10px 12px; border-radius: 14px; }
+.q-main b { display: block; font-size: .92rem; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.q-main small { display: block; margin-top: 3px; color: var(--ink-2); font-size: .74rem; }
+.q-main:active { background: var(--primary-soft); }
+.q-x { flex: none; width: 40px; display: grid; place-items: center; color: var(--coral); border-left: 1px solid var(--line); }
+.quick .empty { grid-column: 1 / -1; }
+.e-acts { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 2px; }
+.e-acts .link { padding: 4px 0; font-size: .8rem; min-height: 32px; }
+.entry.editing { outline: 2px solid var(--primary); }
+.wrap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.wrap-grid > div { background: var(--surface-2); border-radius: 14px; padding: 12px; }
+.wrap-grid small { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.wrap-grid b { display: block; font-family: var(--font-display); font-size: 1.5rem; line-height: 1.15; margin-top: 2px; }
+.wrap-grid span { font-size: .8rem; color: var(--ink-2); }
+
+/* ── History ─────────────────────────────────────────────────────────────── */
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-head b { font-family: var(--font-display); font-size: 1.1rem; }
+.cal-prev { transform: rotate(90deg); } .cal-next { transform: rotate(-90deg); }
+.cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-dow span { text-align: center; font-size: .68rem; font-weight: 700; color: var(--ink-3); padding-bottom: 4px; }
+.cal-blank { aspect-ratio: 1; }
+.cal-d { position: relative; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-radius: 12px; border: 1.5px solid transparent; min-height: 40px; }
+.cal-d i { font-style: normal; font-size: .82rem; font-weight: 600; color: var(--ink-2); line-height: 1; }
+.cal-d b { font-family: var(--font-display); font-size: .78rem; line-height: 1; }
+.cal-d.done { background: var(--primary); } .cal-d.done i, .cal-d.done b { color: var(--on-primary); }
+.cal-d.part { border: 1.5px dashed var(--amber); } .cal-d.part b { color: var(--amber); }
+.cal-d.future i { opacity: .45; }
+.cal-d.today { border-color: var(--primary); }
+.cal-d.done.today { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent); }
+.cal-d.sel { outline: 2px solid var(--blue); outline-offset: 1px; }
+.h-ex { padding: 12px 0; border-top: 1px solid var(--line); }
+.h-ex:first-of-type { margin-top: 14px; }
+.h-ex > b { display: block; font-size: .92rem; }
+.h-ex > span { display: block; color: var(--ink-2); font-size: .85rem; margin-top: 3px; overflow-wrap: anywhere; }
+.h-ex .set-h { margin-top: 10px; }
+.h-ex .set + .set { margin-top: 8px; }
+.h-ex .set .in { min-height: 44px; padding: 0 4px; text-align: center; font-weight: 600; }
+.prs { list-style: none; display: grid; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.prs li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; }
+.prs li .chip { flex: none; margin-top: 1px; }
+.prs small { color: var(--ink-2); margin-left: 6px; }
+#hist-root > * + * { margin-top: 22px; }
+.cal-d, .cal-blank { aspect-ratio: auto; height: 46px; min-height: 0; }
+
+/* ── Trends ──────────────────────────────────────────────────────────────── */
+.chart .avgln { fill: none; stroke: var(--blue); stroke-width: 2; stroke-dasharray: 5 4; stroke-linecap: round; stroke-linejoin: round; }
+.chart .ln { stroke-width: 1.5; opacity: .75; }
+.wk-wrap { overflow-x: auto; }
+.wk { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.wk th, .wk td { padding: 9px 6px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.wk thead th { font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; }
+.wk tbody th { text-align: left; font-weight: 600; white-space: normal; }
+.wk tbody tr:last-child th, .wk tbody tr:last-child td { border-bottom: 0; }
+.coach-row { grid-template-columns: 92px 1fr; }
 </style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></symbol>
@@ -618,6 +685,7 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.8 12.5h9.4L17.5 7M10 11v5.5M14 11v5.5"/></symbol>
     <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
     <symbol id="i-mark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6"/><path d="M12 4v2.4M12 17.6V20M4 12h2.4M17.6 12H20"/></symbol>
   </defs>
 </svg>
@@ -674,6 +742,7 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
   <button type="button" class="side-btn" data-go="eat"><svg class="i"><use href="#i-fork"/></svg>Eat</button>
   <button type="button" class="side-btn" data-go="progress"><svg class="i"><use href="#i-chart"/></svg>Progress</button>
   <div class="side-sep"></div>
+  <button type="button" class="side-btn" data-go="history"><svg class="i"><use href="#i-calendar"/></svg>History</button>
   <button type="button" class="side-btn" data-go="recovery"><svg class="i"><use href="#i-heart"/></svg>Recovery</button>
   <button type="button" class="side-btn" data-go="review"><svg class="i"><use href="#i-clipboard"/></svg>Weekly review</button>
   <button type="button" class="side-btn" data-go="library"><svg class="i"><use href="#i-book"/></svg>Exercise library</button>
@@ -695,6 +764,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
         <section>
           <h2 class="sec-h">Coach</h2>
           <div class="card coach" id="coach"></div>
+        </section>
+        <section id="wrap-sec" hidden>
+          <h2 class="sec-h">Evening wrap-up</h2>
+          <div class="card wrap" id="wrap"></div>
         </section>
         <section>
           <div class="sec-row"><h2 class="sec-h">This week</h2><span class="chip" id="consistency-chip" hidden></span></div>
@@ -723,22 +796,42 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
     <div id="train-root"></div>
   </section>
 
+  <!-- HISTORY -->
+  <section class="view view-narrow" id="view-history" aria-label="History">
+    <div class="page-h"><div><h1>History</h1><p>Every session, your best sets, and a place to fix old logs.</p></div></div>
+    <div id="hist-root"></div>
+  </section>
+
   <!-- EAT -->
   <section class="view" id="view-eat" aria-label="Eat">
     <div class="page-h"><div><h1>Eat</h1><p id="eat-sub">Hit your numbers, not perfection.</p></div></div>
     <div class="card" id="eat-fuel"></div>
     <section>
-      <h2 class="sec-h">Add food</h2>
-      <div class="card">
+      <div class="sec-row"><h2 class="sec-h">Quick add</h2><button type="button" class="link" id="meals-manage" data-action="meals-manage">Edit list</button></div>
+      <div class="seg portion" id="portion-seg" role="group" aria-label="Portion size">
+        <button type="button" data-action="portion" data-v="0.5" aria-pressed="false">&frac12;</button>
+        <button type="button" data-action="portion" data-v="1" aria-pressed="true">1 portion</button>
+        <button type="button" data-action="portion" data-v="1.5" aria-pressed="false">1&frac12;</button>
+        <button type="button" data-action="portion" data-v="2" aria-pressed="false">2</button>
+      </div>
+      <div class="quick" id="eat-quick"></div>
+    </section>
+    <section>
+      <h2 class="sec-h" id="eat-form-h">Add food</h2>
+      <div class="card" id="eat-form">
         <div class="form-grid">
-          <label class="field full"><span>What was it (optional)</span><input class="in" id="eat-name" type="text" placeholder="e.g. Oats, banana and gainer" maxlength="60"></label>
+          <label class="field full"><span>What was it</span><input class="in" id="eat-name" type="text" placeholder="e.g. Oats, banana and gainer" maxlength="60"></label>
           <label class="field"><span>Calories</span><input class="in" id="eat-cal" type="text" inputmode="decimal" placeholder="kcal"></label>
           <label class="field"><span>Protein (g)</span><input class="in" id="eat-prot" type="text" inputmode="decimal" placeholder="0"></label>
           <label class="field"><span>Carbs (g)</span><input class="in" id="eat-carb" type="text" inputmode="decimal" placeholder="0"></label>
           <label class="field"><span>Fat (g)</span><input class="in" id="eat-fat" type="text" inputmode="decimal" placeholder="0"></label>
         </div>
         <p class="small muted" style="margin:10px 0 14px">Leave calories empty and they are worked out from the macros.</p>
-        <button type="button" class="btn btn-block" data-action="add-food"><svg class="i"><use href="#i-plus"/></svg>Add to today</button>
+        <button type="button" class="btn btn-block" id="eat-add" data-action="add-food"><svg class="i"><use href="#i-plus"/></svg><span>Add to today</span></button>
+        <div class="btn-row" style="margin-top:10px">
+          <button type="button" class="btn btn-ghost" data-action="save-meal-form">Save as quick meal</button>
+          <button type="button" class="btn btn-ghost" id="eat-cancel" data-action="entry-cancel" hidden>Cancel edit</button>
+        </div>
       </div>
     </section>
     <section>
@@ -757,7 +850,12 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
     <div class="stats" id="p-stats"></div>
     <section>
       <h2 class="sec-h">Weight trend</h2>
-      <div class="card" id="p-chart"></div>
+      <div id="p-trend"></div>
+      <div class="card" id="p-chart" style="margin-top:12px"></div>
+    </section>
+    <section>
+      <h2 class="sec-h">Last four weeks</h2>
+      <div id="p-weeks"></div>
     </section>
     <section>
       <h2 class="sec-h">Log measurements</h2>
@@ -786,10 +884,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
   <section class="view view-narrow" id="view-recovery" aria-label="Recovery">
     <div class="page-h"><div><h1>Recovery</h1><p>Muscle is built while you rest.</p></div></div>
     <div>
-      <div class="card info"><div class="ico"><svg class="i"><use href="#i-moon"/></svg></div><div><h3>Sleep</h3><p><b>Aim for 7.5 to 9 hours.</b> Same bedtime within 30 minutes. Phone away 30 minutes before. Dark, cool room. After a night under 6 hours, cut volume rather than skipping.</p><span class="chip">Highest leverage</span></div></div>
+      <div class="card info"><div class="ico"><svg class="i"><use href="#i-moon"/></svg></div><div><h3>Sleep</h3><p><b>Aim for 7 to 9 hours.</b> Same bedtime within 30 minutes. Phone away 30 minutes before. Dark, cool room. After a night under 6 hours, cut volume rather than skipping.</p><span class="chip">Highest leverage</span></div></div>
       <div class="card info blue"><div class="ico"><svg class="i"><use href="#i-leaf"/></svg></div><div><h3>Active recovery day</h3><p>20 to 30 minutes of easy walking, light stretching for hips, chest and lats, optional foam rolling. No gym. Eat your full protein target.</p></div></div>
-      <div class="card info amber"><div class="ico"><svg class="i"><use href="#i-heart"/></svg></div><div><h3>Cardio</h3><p><b>Keep it minimal while building.</b> Two easy sessions a week at most, never right after legs. Your commute already counts.</p></div></div>
-      <div class="card info coral"><div class="ico"><svg class="i"><use href="#i-dumbbell"/></svg></div><div><h3>Deload</h3><p>Every 5 to 6 weeks, take one week at about 60% of your usual sets with the same weights. Do not skip it. Strength jumps the week after.</p></div></div>
+      <div class="card info amber"><div class="ico"><svg class="i"><use href="#i-heart"/></svg></div><div><h3>Cardio</h3><p><b>Keep it minimal while building.</b> Two easy sessions a week at most, try to avoid it right after legs. Your commute already counts.</p></div></div>
+      <div class="card info coral"><div class="ico"><svg class="i"><use href="#i-dumbbell"/></svg></div><div><h3>Deload</h3><p>Roughly every 5 to 8 weeks, or when your performance has dropped for two weeks, take one lighter week at about 60% of your usual sets with the same weights. Many people come back stronger.</p></div></div>
     </div>
     <div class="card"><h3 class="card-title">Stress is physical</h3><p class="card-sub" style="font-size:.92rem;line-height:1.55">University, work and money pressure slow recovery. Three small resets that work: a five minute walk outside after training, ten slow breaths before your first meal, and no phone for the first twenty minutes of the day.</p></div>
   </section>
@@ -797,6 +895,10 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
   <!-- REVIEW -->
   <section class="view view-narrow" id="view-review" aria-label="Weekly review">
     <div class="page-h"><div><h1>Weekly review</h1><p>Three minutes every Sunday.</p></div></div>
+    <section>
+      <h2 class="sec-h">Your last four weeks</h2>
+      <div id="rev-weeks"></div>
+    </section>
     <div class="card">
       <div class="rq"><b>Training sessions completed</b><span class="hint" id="hint-training"></span><div class="score-row" id="sc-training"></div></div>
       <div class="rq"><b>Days you hit your protein target</b><span class="hint" id="hint-protein"></span><div class="score-row" id="sc-protein"></div></div>
@@ -821,34 +923,31 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
     <div class="page-h"><div><h1>Protocols</h1><p>A bad day should not become a bad month.</p></div></div>
     <div>
       <article class="card proto"><div class="proto-h"><div class="ico"><svg class="i"><use href="#i-x"/></svg></div><div><h3>Missed workout</h3><p>You skipped a planned session</p></div></div><ol>
-        <li>Do not make it up the same day. Rest beats training exhausted.</li><li>The next session continues as planned. No punishment sets.</li><li>One miss changes nothing. Three in a row means look for the cause.</li><li>Tap Skip in the app so the cycle stays honest.</li><li>Write it in your Sunday review. Patterns show over weeks.</li></ol></article>
+        <li>Do not make it up the same day. Rest beats training exhausted.</li><li>The next session continues as planned. No punishment sets.</li><li>One miss changes nothing. Three in a row means look for the cause.</li><li>Tap Not today in Train so your queue stays honest.</li><li>Write it in your Sunday review. Patterns show over weeks.</li></ol></article>
       <article class="card proto"><div class="proto-h"><div class="ico"><svg class="i"><use href="#i-fork"/></svg></div><div><h3>Low budget week</h3><p>Food money is tight</p></div></div><ol>
         <li>Eggs: 10 for about 2 to 3 euros is 60g protein and 700 kcal.</li><li>Canned tuna or sardines are the cheapest protein per gram.</li><li>Oats and rice are cheap, filling calories.</li><li>Protect protein first. Drop extras before you drop protein.</li><li>Keep taking creatine. One bag lasts 2 to 3 months.</li></ol></article>
       <article class="card proto"><div class="proto-h"><div class="ico"><svg class="i"><use href="#i-flame"/></svg></div><div><h3>High stress period</h3><p>Exams, deadlines, money, personal problems</p></div></div><ol>
-        <li>Drop to 3 sessions this week. Minimum effective dose.</li><li>Cut sets by 30%, keep the weights.</li><li>If you can only do one thing, sleep beats training.</li><li>Keep eating. Appetite drops under stress but muscle loss starts within days.</li><li>Keep sessions short and leave the gym feeling better.</li></ol></article>
+        <li>Drop to 3 sessions this week. Minimum effective dose.</li><li>Cut sets by 30%, keep the weights.</li><li>If you can only do one thing, sleep beats training.</li><li>Keep eating. Appetite often drops under stress, and under-eating makes recovery harder.</li><li>Keep sessions short and leave the gym feeling better.</li></ol></article>
       <article class="card proto"><div class="proto-h"><div class="ico"><svg class="i"><use href="#i-leaf"/></svg></div><div><h3>No gym access</h3><p>Travelling, moving, gym closed</p></div></div><ol>
-        <li>Push-ups in three widths cover chest and triceps.</li><li>A sturdy table edge or bar works for rows.</li><li>Pike push-ups cover shoulders.</li><li>Bodyweight squats and lunges maintain legs.</li><li>Muscle is lost by under-eating, not by missed workouts. Eat.</li></ol></article>
+        <li>Push-ups in three widths cover chest and triceps.</li><li>A sturdy table edge or bar works for rows.</li><li>Pike push-ups cover shoulders.</li><li>Bodyweight squats and lunges maintain legs.</li><li>A few missed workouts rarely cost muscle. Weeks of under-eating can. Eat.</li></ol></article>
       <article class="card proto"><div class="proto-h"><div class="ico"><svg class="i"><use href="#i-target"/></svg></div><div><h3>Restart after a gap</h3><p>A week or more off</p></div></div><ol>
-        <li>Week 1 at about 60% of your old volume. Soreness will be loud anyway.</li><li>Get food right first: three solid eating days before you worry about training.</li><li>Look at your first photo and re-read your goal.</li><li>Tell your training partner. Accountability restarts accountability.</li><li>Week 2 back to normal. Strength returns quickly.</li></ol>
-        <button type="button" class="btn btn-soft btn-block" data-go="profile" style="margin-top:14px">Restart my cycle in Profile</button></article>
+        <li>Week 1 at about 60% of your old volume. Soreness will be loud anyway.</li><li>Get food right first: three solid eating days before you worry about training.</li><li>Look at your first photo and re-read your goal.</li><li>Tell your training partner. Accountability restarts accountability.</li><li>Week 2 back to normal. Strength usually comes back faster than it took to build.</li></ol>
+        <button type="button" class="btn btn-soft btn-block" data-go="profile" style="margin-top:14px">Reset my queue in Profile</button></article>
     </div>
   </section>
 
   <!-- SUPPLEMENTS -->
   <section class="view view-narrow" id="view-supps" aria-label="Supplements">
-    <div class="page-h"><div><h1>Supplements</h1><p>Few, proven, cheap.</p></div></div>
+    <div class="page-h"><div><h1>Supplements</h1><p>Track what you take, as it is on the label.</p></div></div>
     <section><h2 class="sec-h">Today's stack</h2><div class="tiles" id="supp-tiles"></div></section>
     <section>
-      <h2 class="sec-h">Worth taking</h2>
-      <div class="card info"><div class="ico"><svg class="i"><use href="#i-bolt"/></svg></div><div><h3>Creatine monohydrate</h3><p>5g every day, any time. Plain monohydrate is as good as expensive brands. If your gainer already has 3g, count it.</p><span class="chip">Must</span></div></div>
-      <div class="card info amber"><div class="ico"><svg class="i"><use href="#i-sun"/></svg></div><div><h3>Vitamin D3</h3><p>3000 to 4000 IU daily with a meal that has fat. Most people in Germany are low from October to March.</p><span class="chip chip-amber">Useful</span></div></div>
-      <div class="card info blue"><div class="ico"><svg class="i"><use href="#i-pill"/></svg></div><div><h3>Zinc</h3><p>15 to 25mg daily with food. Do not exceed that long term.</p><span class="chip chip-blue">Useful</span></div></div>
-      <div class="card info"><div class="ico"><svg class="i"><use href="#i-droplet"/></svg></div><div><h3>Omega-3 fish oil</h3><p>About 2g daily. Optional, and skip it if you eat salmon twice a week.</p><span class="chip">Optional</span></div></div>
-      <div class="card info blue"><div class="ico"><svg class="i"><use href="#i-drumstick"/></svg></div><div><h3>Whey and mass gainer</h3><p>Convenience, not magic. Use them to close a protein or calorie gap, not to replace meals.</p></div></div>
+      <h2 class="sec-h">My supplement log</h2>
+      <div class="card info amber"><div class="ico"><svg class="i"><use href="#i-shield"/></svg></div><div><h3>Use your product label</h3><p>This is a log, not a prescription. Write down what is on your product and what you actually take. For vitamin D and zinc, more is not better: ask a doctor or pharmacist, and consider a blood test before taking vitamin D long term. The German Nutrition Society (DGE) uses 20 &micro;g (800 IU) a day as its reference when sunlight is not enough, and the EU upper limit for adults is 100 &micro;g (4000 IU) for vitamin D and 25 mg for zinc.</p></div></div>
+      <div id="supp-log"></div>
     </section>
     <section>
       <h2 class="sec-h">Skip these</h2>
-      <div class="card info coral"><div class="ico"><svg class="i"><use href="#i-x"/></svg></div><div><h3>Test boosters, BCAAs, fat burners, pre-workout</h3><p>Test boosters are marketing. BCAAs are redundant when protein is covered. Coffee does the job of pre-workout for cents. Iron only if a blood test shows you need it.</p></div></div>
+      <div class="card info coral"><div class="ico"><svg class="i"><use href="#i-x"/></svg></div><div><h3>Test boosters, BCAAs, fat burners</h3><p>Test boosters have little evidence behind them. BCAAs add little when your protein is covered. Take iron only if a blood test shows you need it. Check any pre-workout for caffeine content and your own tolerance.</p></div></div>
     </section>
   </section>
 
@@ -864,6 +963,7 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
         <label class="field"><span>Height (cm)</span><input class="in" id="p-height" type="text" inputmode="decimal"></label>
         <label class="field"><span>Weight (kg)</span><input class="in" id="p-weight" type="text" inputmode="decimal"></label>
         <label class="field"><span>Goal weight (kg)</span><input class="in" id="p-goal" type="text" inputmode="decimal"></label>
+        <label class="field"><span>Planned change per week (kg)</span><input class="in" id="p-rate" type="text" inputmode="decimal" placeholder="0.25 (default)"></label>
         <label class="field"><span>Experience</span><select class="in" id="p-exp"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>
         <label class="field"><span>Start date</span><input class="in" id="p-start" type="date"></label>
         <label class="field"><span>Target date</span><input class="in" id="p-target" type="date"></label>
@@ -957,6 +1057,7 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
 <div class="sheet" id="sheet" role="dialog" aria-label="More" aria-modal="true">
   <div class="sheet-grip"></div>
   <div class="sheet-list">
+    <button type="button" class="sheet-item" data-go="history"><span class="ico"><svg class="i"><use href="#i-calendar"/></svg></span><span><b>History</b><span class="d">Calendar, old logs, personal records</span></span></button>
     <button type="button" class="sheet-item" data-go="recovery"><span class="ico"><svg class="i"><use href="#i-heart"/></svg></span><span><b>Recovery</b><span class="d">Sleep, cardio, deloads</span></span></button>
     <button type="button" class="sheet-item" data-go="review"><span class="ico"><svg class="i"><use href="#i-clipboard"/></svg></span><span><b>Weekly review</b><span class="d">Three minutes on Sunday</span></span></button>
     <button type="button" class="sheet-item" data-go="library"><span class="ico"><svg class="i"><use href="#i-book"/></svg></span><span><b>Exercise library</b><span class="d">Cues, mistakes, alternatives</span></span></button>
@@ -1118,7 +1219,7 @@ const Img = {
  * ───────────────────────────────────────────────────────────────────────────── */
 
 const AppState = (() => {
-  let profile = null, checkins = {}, workoutLogs = {}, measurements = [], nutritionLogs = {}, reviews = [], cycleState = null, plan = null;
+  let profile = null, checkins = {}, workoutLogs = {}, measurements = [], nutritionLogs = {}, reviews = [], cycleState = null, plan = null, supplog = {}, meals = [];
   let stats = { currentStreak: 0, longestStreak: 0, totalWorkouts: 0, consistency: null };
 
   function load() {
@@ -1130,29 +1231,35 @@ const AppState = (() => {
     reviews = DB.get('reviews', []);
     cycleState = DB.get('cycleState', null);
     plan = DB.get('plan', null);
+    supplog = DB.get('supplog', {});
+    meals = DB.get('meals', []);
     stats = DB.get('stats', stats);
   }
-  const KEYS = ['profile', 'checkins', 'workoutLogs', 'measurements', 'nutritionLogs', 'reviews', 'cycleState', 'plan', 'stats'];
+  const KEYS = ['profile', 'checkins', 'workoutLogs', 'measurements', 'nutritionLogs', 'reviews', 'cycleState', 'plan', 'supplog', 'meals', 'stats'];
 
   return {
     load,
     getProfile: () => profile, getCheckins: () => checkins, getCheckin: d => checkins[d] || null,
-    getWorkoutLog: d => workoutLogs[d] || null, getMeasurements: () => measurements,
+    getWorkoutLog: d => workoutLogs[d] || null, getWorkoutLogs: () => workoutLogs, getMeasurements: () => measurements,
     getNutritionLogs: () => nutritionLogs, getNutritionLog: d => nutritionLogs[d] || null,
-    getReviews: () => reviews, getCycleState: () => cycleState, getPlan: () => plan, getStats: () => stats,
+    getReviews: () => reviews, getCycleState: () => cycleState, getPlan: () => plan, getSuppLog: () => supplog, getMeals: () => meals, getStats: () => stats,
 
     saveProfile(p) { profile = p; return DB.set('profile', p); },
     saveCheckin(d, c) { checkins[d] = c; return DB.set('checkins', checkins); },
     saveWorkoutLog(d, l) { workoutLogs[d] = l; return DB.set('workoutLogs', workoutLogs); },
+    removeWorkoutLog(d) { delete workoutLogs[d]; return DB.set('workoutLogs', workoutLogs); },
     addMeasurement(m) { measurements.unshift(m); return DB.set('measurements', measurements); },
+    removeMeasurement(savedAt) { const i = measurements.findIndex(m => m.savedAt === savedAt); if (i < 0) return false; measurements.splice(i, 1); return DB.set('measurements', measurements); },
     saveNutrition(d, n) { nutritionLogs[d] = n; return DB.set('nutritionLogs', nutritionLogs); },
     addReview(r) { reviews.unshift(r); return DB.set('reviews', reviews); },
+    saveMeals(m) { meals = m; return DB.set('meals', m); },
+    saveSuppLog(l) { supplog = l; return DB.set('supplog', l); },
     savePlan(p) { plan = p; return DB.set('plan', p); },
     saveCycleState(cs) { cycleState = cs; return DB.set('cycleState', cs); },
     saveStats(s) { stats = s; return DB.set('stats', s); },
 
     exportAll() {
-      return { schema: 'FitnessOS-v3', exportedAt: new Date().toISOString(), profile, checkins, workoutLogs, measurements, nutritionLogs, reviews, cycleState, plan, stats };
+      return { schema: 'FitnessOS-v3', exportedAt: new Date().toISOString(), profile, checkins, workoutLogs, measurements, nutritionLogs, reviews, cycleState, plan, supplog, meals, stats };
     },
     /** Replace everything with a backup. Returns true when the file looked valid. */
     importAll(obj) {
@@ -1300,7 +1407,7 @@ const CycleEngine = (() => {
   /* ── The assistant: which session fits today? ── */
   function coachAnswers() {
     const c = (AppState.getCheckin(Dates.today()) || {}).coach || {};
-    return { sleep: c.sleep || 'ok', energy: c.energy || 'ok', sore: c.sore || {}, pain: !!c.pain };
+    return { sleep: c.sleep || 'ok', energy: c.energy || 'ok', stress: c.stress || null, motivation: c.motivation || null, sore: c.sore || {}, pain: !!c.pain };
   }
   function suggest() {
     const a = coachAnswers(), today = Dates.today(), pl = plan();
@@ -1350,6 +1457,7 @@ const CycleEngine = (() => {
     if (rest && restRun >= 2 && !a.pain) { rest = false; restWhy = ''; }        // never let rest become a habit
     const notes = [];
     if (!rest && (a.energy === 'low' || a.sleep === 'poor')) notes.push('Energy or sleep is low. Train, but stay 3 reps from failure and drop the last set if it drags.');
+    if (!rest && (a.stress === 'high' || a.motivation === 'low')) notes.push('Stress is high or motivation is low. Do the first two exercises properly and see how you feel. Showing up counts.');
     if (!rest && restRun >= 2) notes.push('You have rested ' + restRun + ' days. Today is a good day to show up, even if it is lighter.');
     if (weekDone >= perWeek()) notes.push('You already did ' + weekDone + ' sessions in the last 7 days. Another one is optional.');
     return { rest, restWhy, ranked: list, reason, notes, light: a.energy === 'low' || a.sleep === 'poor', trainedRun, restRun, weekDone };
@@ -1956,7 +2064,7 @@ const Rings = {
 
 /* ── Weight trend chart (inline SVG, drawn to scale) ── */
 const Chart = {
-  weight(points, goal) {
+  weight(points, goal, avg) {
     if (points.length < 2) {
       return '<div class="empty">Log your weight on two different days to see the trend.</div>';
     }
@@ -1966,6 +2074,7 @@ const Chart = {
     const pad = Math.max(0.5, (hi - lo) * 0.18); lo -= pad; hi += pad;
     const x = i => L + (W - L - R) * (points.length === 1 ? 0.5 : i / (points.length - 1));
     const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+    const avgLine = avg && avg.length === points.length && points.length > 3 ? '<path class="avgln" d="' + avg.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ') + '"/>' : '';
     const line = points.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.v).toFixed(1)).join(' ');
     const area = line + ' L' + x(points.length - 1).toFixed(1) + ' ' + (H - B) + ' L' + x(0).toFixed(1) + ' ' + (H - B) + ' Z';
     const ticks = [lo + pad, (lo + hi) / 2, hi - pad].map(v => '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/>' +
@@ -1977,7 +2086,7 @@ const Chart = {
       : (points.length <= 14 ? '<circle class="pt" cx="' + x(i).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="3.5"/>' : '')).join('');
     return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Weight trend from ' + points[0].v + ' to ' + points[points.length - 1].v + ' kilograms">' +
       '<defs><linearGradient id="wgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--primary)" stop-opacity=".28"/><stop offset="1" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs>' +
-      ticks + goalLine + '<path class="ar" d="' + area + '"/><path class="ln" d="' + line + '"/>' + dots +
+      ticks + goalLine + '<path class="ar" d="' + area + '"/><path class="ln" d="' + line + '"/>' + avgLine + dots +
       '<text class="ax" x="' + L + '" y="' + (H - 6) + '">' + Dates.fmt(points[0].d, { day: 'numeric', month: 'short' }) + '</text>' +
       '<text class="ax" x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end">' + Dates.fmt(points[points.length - 1].d, { day: 'numeric', month: 'short' }) + '</text></svg>';
   }
@@ -1994,29 +2103,44 @@ const Checkin = {
       { key: 'calories', icon: 'flame', label: 'Calories', sub: Utils.fmt(t.kcal) + ' hit' },
       { key: 'water', icon: 'droplet', label: 'Water', sub: t.water + ' L' },
       { key: 'sleep', icon: 'moon', label: 'Sleep', sub: '7 hours or more' },
-      { key: 'creatine', icon: 'bolt', label: 'Creatine', sub: '5g taken' }
+      { key: 'creatine', icon: 'bolt', label: 'Creatine', sub: 'Taken' }
     ];
   },
+  suppList() {
+    const log = AppState.getSuppLog() || {};
+    return Checkin.supps.map(t => Object.assign({}, t, { sub: (log[t.key] && log[t.key].product) || 'Taken' }));
+  },
   supps: [
-    { key: 'creatine', icon: 'bolt', label: 'Creatine', sub: '5g' },
-    { key: 'd3', icon: 'sun', label: 'Vitamin D3', sub: '3000 to 4000 IU' },
-    { key: 'zinc', icon: 'pill', label: 'Zinc', sub: '15 to 25 mg' },
-    { key: 'omega3', icon: 'droplet', label: 'Omega-3', sub: 'optional' }
+    { key: 'creatine', icon: 'bolt', label: 'Creatine' },
+    { key: 'd3', icon: 'sun', label: 'Vitamin D3' },
+    { key: 'zinc', icon: 'pill', label: 'Zinc' },
+    { key: 'omega3', icon: 'droplet', label: 'Omega-3' }
   ],
+  /** Protein and calories tick themselves from the food log. */
+  isOn(key, saved) {
+    if (key === 'protein' || key === 'calories') {
+      const t = Targets.get(), n = dayNutrition(Dates.today());
+      return key === 'protein' ? n.prot >= t.protein * 0.9 : n.cal >= t.kcal * 0.9;
+    }
+    return !!saved[key];
+  },
   render(containerId, list) {
     const c = Utils.el(containerId); if (!c) return;
     const saved = AppState.getCheckin(Dates.today()) || {};
-    c.innerHTML = list.map(t =>
-      '<button type="button" class="tile" data-action="tile" data-key="' + t.key + '" aria-pressed="' + (!!saved[t.key]) + '">' +
-      '<span class="ti">' + Utils.icon(t.icon) + '</span>' +
-      '<span><b>' + t.label + '</b><small>' + t.sub + '</small></span>' +
-      '<span class="ck">' + Utils.icon('check') + '</span></button>').join('');
+    c.innerHTML = list.map(t => {
+      const auto = t.key === 'protein' || t.key === 'calories';
+      return '<button type="button" class="tile" data-action="tile" data-key="' + t.key + '" aria-pressed="' + Checkin.isOn(t.key, saved) + '">' +
+        '<span class="ti">' + Utils.icon(t.icon) + '</span>' +
+        '<span><b>' + t.label + '</b><small>' + (auto ? 'from your food log' : t.sub) + '</small></span>' +
+        '<span class="ck">' + Utils.icon('check') + '</span></button>';
+    }).join('');
     if (containerId === 'tiles') {
-      const n = list.filter(t => saved[t.key]).length;
+      const n = list.filter(t => Checkin.isOn(t.key, saved)).length;
       const cc = Utils.el('checkin-count'); if (cc) cc.textContent = n + ' of ' + list.length;
     }
   },
   toggle(key) {
+    if (key === 'protein' || key === 'calories') { Utils.toast('This ticks itself when your food log reaches 90% of the target'); return; }
     const today = Dates.today();
     const c = Object.assign({}, AppState.getCheckin(today) || {});
     c[key] = !c[key];
@@ -2030,7 +2154,7 @@ const Checkin = {
       }
     }
     Checkin.render('tiles', Checkin.main());
-    Checkin.render('supp-tiles', Checkin.supps);
+    Checkin.render('supp-tiles', Checkin.suppList());
     if (key === 'trained') Dashboard.render();
   }
 };
@@ -2065,6 +2189,30 @@ function growBars(container) {
 }
 
 const Dashboard = {
+  wrapDone() { const c = Object.assign({}, AppState.getCheckin(Dates.today()) || {}, { wrapped: true }); AppState.saveCheckin(Dates.today(), c); Dashboard.renderWrap(); },
+  wrapUndo() { const c = Object.assign({}, AppState.getCheckin(Dates.today()) || {}, { wrapped: false }); AppState.saveCheckin(Dates.today(), c); Dashboard.renderWrap(); },
+  /** After 18:00: how did the day go against your numbers? */
+  renderWrap() {
+    const sec = Utils.el('wrap-sec'), box = Utils.el('wrap'); if (!sec || !box) return;
+    const today = Dates.today(), c = AppState.getCheckin(today) || {};
+    if (new Date().getHours() < 18 && !c.wrapped) { sec.hidden = true; return; }
+    sec.hidden = false;
+    if (c.wrapped) { box.innerHTML = '<div class="coach-done"><div><small>Evening</small><b>Wrapped up. See you tomorrow.</b></div><button type="button" class="btn btn-soft" data-action="wrap-undo">Reopen</button></div>'; return; }
+    const t = Targets.get(), n = dayNutrition(today), e = CycleEngine.getTodayEntry();
+    const pLeft = Math.round(t.protein - n.prot), kLeft = Math.round(t.kcal - n.cal);
+    let train = '';
+    if (e && e.sessionKey) train = CYCLE_META[e.sessionKey].isRest ? 'Rest day today.' : (e.status === 'done' ? 'Session done.' : 'Session planned but not logged yet.');
+    let hint;
+    if (n.cal === 0) hint = 'Nothing is logged today. Add what you ate, even roughly.';
+    else if (pLeft <= 0) hint = 'Protein target reached.';
+    else if (pLeft >= 40) hint = 'About ' + pLeft + ' g protein short. A shake plus quark or skyr, or eggs or chicken, would close most of it.';
+    else hint = 'About ' + pLeft + ' g protein to go. Skyr, milk or a few eggs would cover it.';
+    box.innerHTML = '<div class="wrap-grid"><div><small>Calories</small><b class="num">' + Utils.fmt(n.cal) + '</b><span class="num">' + (kLeft > 0 ? Utils.fmt(kLeft) + ' left' : 'target reached') + '</span></div>' +
+      '<div><small>Protein</small><b class="num">' + Math.round(n.prot) + ' g</b><span class="num">' + (pLeft > 0 ? pLeft + ' g left' : 'target reached') + '</span></div></div>' +
+      (train ? '<p class="small muted" style="margin-top:12px">' + train + '</p>' : '') +
+      '<p style="margin:8px 0 14px">' + Utils.esc(hint) + '</p>' +
+      '<div class="btn-row"><button type="button" class="btn btn-soft" data-go="eat">Log food</button><button type="button" class="btn" data-action="wrap-done">Done for today</button></div>';
+  },
   render() {
     const p = AppState.getProfile(); if (!p) return;
     const today = Dates.today();
@@ -2130,6 +2278,7 @@ const Dashboard = {
     /* check-in */
     Checkin.render('tiles', Checkin.main());
     Coach.renderAll();
+    Dashboard.renderWrap();
 
     /* phase */
     const m = AppState.getMeasurements();
@@ -2210,10 +2359,11 @@ const WorkoutView = (() => {
     log = existing && existing.sessionKey === key ? existing : fresh(key, today);
     const c = counts(), pct = c.total ? Math.round(c.done / c.total * 100) : 0;
 
+    const bests = Records.table(today);
     let html = '<div class="page-h"><div><h1>Train</h1><p>' + Dates.fmt(today, { weekday: 'long', day: 'numeric', month: 'long' }) + '</p></div></div>' +
       '<div class="card sess-card" style="margin-top:22px"><div class="top"><div><h2 class="card-title">' + Utils.esc(s.label) + '</h2><p class="card-sub">' + Utils.esc(s.note) + '</p></div>' +
       '<span class="chip' + (log.completed ? '' : ' chip-blue') + '" id="sess-chip">' + (log.completed ? 'Logged' : meta.short) + '</span></div>' +
-      '<div class="sess-prog"><div class="meta"><span>Sets done</span><span class="num" id="sess-count">' + c.done + ' of ' + c.total + '</span></div><div class="bar"><i id="sess-bar" data-w="' + pct + '"></i></div></div></div><div style="margin-top:14px">';
+      '<div class="sess-prog"><div class="meta"><span>Sets done</span><span class="num" id="sess-count">' + c.done + ' of ' + c.total + '</span></div><div class="bar"><i id="sess-bar" data-w="' + pct + '"></i></div></div></div>' + (log.completed ? Records.summaryHtml(log) : '') + '<div style="margin-top:14px">';
 
     s.exercises.forEach((ex, i) => {
       const le = log.exercises[i], dn = le.sets.filter(x => x.done).length, last = lastTime(ex.id, today);
@@ -2224,7 +2374,8 @@ const WorkoutView = (() => {
         '<span class="ex-t"><b>' + Utils.esc(ex.name) + '</b><span>' + Utils.esc(ex.target) + ' &middot; ' + ex.sets + ' &times; ' + Utils.esc(ex.reps) + (ex.kind === 'warmup' ? '' : ' &middot; RIR ' + ex.rir) + (ex.ss ? ' &middot; superset' : '') + '</span></span>' +
         '<span class="chip chip-blue num" id="ex-c-' + i + '">' + dn + '/' + ex.sets + '</span><svg class="i chev"><use href="#i-chev"/></svg></button>' +
         '<div class="ex-body"><div class="ex-in"><div class="ex-pad">' +
-        (last ? '<p class="small muted" style="margin-bottom:10px">Last time: <b style="color:var(--ink)" class="num">' + last.map(x => (x.weight || '–') + '&times;' + (x.reps || '–')).join(' &middot; ') + '</b></p>' : '') +
+        (last ? '<p class="small muted" style="margin-bottom:' + (bests[ex.id] ? '2' : '10') + 'px">Last time: <b style="color:var(--ink)" class="num">' + last.map(x => (x.weight || '–') + '&times;' + (x.reps || '–')).join(' &middot; ') + '</b></p>' : '') +
+        (bests[ex.id] ? '<p class="small muted" style="margin-bottom:10px">Best: <b style="color:var(--ink)" class="num">' + bests[ex.id].weight + '&times;' + bests[ex.id].reps + '</b> on ' + Dates.fmt(bests[ex.id].date, { day: 'numeric', month: 'short' }) + '</p>' : '') +
         (ex.kind === 'warmup' ? '' : '<div class="set-h"><span></span><span>KG</span><span>REPS</span><span>RIR</span><span></span></div>');
       for (let j = 0; j < ex.sets; j++) {
         const st = le.sets[j] || {}, lp = last ? (last[j] || last[last.length - 1]) : null;
@@ -2296,7 +2447,8 @@ const WorkoutView = (() => {
       const c = Object.assign({}, AppState.getCheckin(today) || {}, { trained: true, savedAt: Date.now() });
       AppState.saveCheckin(today, c);
       render();
-      Utils.toast('Session logged. Well done.');
+      const nPr = Records.prs(log).length;
+      Utils.toast(nPr ? 'Session logged. ' + nPr + (nPr === 1 ? ' new best!' : ' new bests!') : 'Session logged. Well done.');
       window.scrollTo(0, 0);
     },
     reopen() {
@@ -2325,20 +2477,59 @@ const WorkoutView = (() => {
 /* ═══ views: Eat + Progress ══════════════════════════════════════════════════ */
 
 const EatView = {
+  portion: 1, editId: null, manage: false,
+
+  /** Saved quick meals first, then foods you log often (last 3 weeks). */
+  library() {
+    const saved = AppState.getMeals().slice().sort((a, b) => (b.uses || 0) - (a.uses || 0) || (b.last || 0) - (a.last || 0))
+      .map(m => Object.assign({ saved: true }, m));
+    const names = {}; saved.forEach(m => { names[m.name.toLowerCase()] = 1; });
+    const seen = {}, today = Dates.today();
+    for (let i = 0; i < 21; i++) {
+      dayNutrition(Dates.add(today, -i)).entries.forEach(e => {
+        const k = String(e.name || '').trim().toLowerCase();
+        if (!k || k === 'meal' || k === 'earlier total' || names[k]) return;
+        const r = seen[k] || (seen[k] = { id: 'r:' + k, name: e.name, cal: e.cal, prot: e.prot, carb: e.carb, fat: e.fat, uses: 0, saved: false });
+        r.uses++;
+      });
+    }
+    const recent = Object.keys(seen).map(k => seen[k]).sort((a, b) => b.uses - a.uses);
+    return saved.concat(recent).slice(0, 12);
+  },
+
   render() {
     const today = Dates.today(), t = Targets.get(), n = dayNutrition(today);
-    const left = Math.max(0, t.kcal - n.cal), pLeft = Math.max(0, t.protein - n.prot);
-    Utils.el('eat-sub').textContent = n.cal ? (left > 0 ? Utils.fmt(left) + ' kcal and ' + Math.round(pLeft) + 'g protein to go.' : 'Calorie target reached' + (pLeft > 0 ? ', ' + Math.round(pLeft) + 'g protein left.' : '. Protein done too.')) : 'Hit your numbers, not perfection.';
+    const L = (a, b) => Math.max(0, Math.round(a - b));
+    Utils.el('eat-sub').textContent = n.cal
+      ? (t.kcal - n.cal > 0 ? 'Left today: ' + Utils.fmt(t.kcal - n.cal) + ' kcal, ' + L(t.protein, n.prot) + ' g protein, ' + L(t.carbs, n.carb) + ' g carbs, ' + L(t.fat, n.fat) + ' g fat.'
+        : 'Calorie target reached' + (t.protein - n.prot > 0 ? ', ' + L(t.protein, n.prot) + ' g protein left.' : '. Protein done too.'))
+      : 'Hit your numbers, not perfection.';
 
     const fuel = Utils.el('eat-fuel');
     fuel.innerHTML = fuelHtml(n, t);
     Rings.go(fuel); growBars(fuel);
 
+    /* quick add chips */
+    const lib = EatView.library(), q = Utils.el('eat-quick');
+    Utils.qsa('#portion-seg button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.v) === EatView.portion)));
+    const mm = Utils.el('meals-manage'); if (mm) { mm.hidden = !lib.some(m => m.saved); mm.textContent = EatView.manage ? 'Done' : 'Edit list'; }
+    q.innerHTML = lib.length ? lib.map(m => {
+      const k = EatView.portion;
+      return '<div class="qchip' + (m.saved ? ' saved' : '') + '"><button type="button" class="q-main" data-action="quick-add" data-id="' + Utils.esc(m.id) + '">' +
+        '<b>' + Utils.esc(m.name) + '</b><small class="num">' + Utils.fmt(m.cal * k) + ' kcal &middot; ' + Math.round(m.prot * k) + ' g protein</small></button>' +
+        (EatView.manage && m.saved ? '<button type="button" class="q-x" data-action="meal-del" data-id="' + Utils.esc(m.id) + '" aria-label="Delete ' + Utils.esc(m.name) + '">' + Utils.icon('x', 'i-sm') + '</button>' : '') + '</div>';
+    }).join('') : '<div class="empty">Log a meal below and tap <b>Save as quick meal</b>. Next time it is one tap. Foods you eat often also show up here by themselves.</div>';
+
+    /* today's entries */
     const list = Utils.el('eat-entries');
-    if (!n.entries.length) list.innerHTML = '<div class="empty">Nothing logged yet. Add your first meal above.</div>';
+    if (!n.entries.length) list.innerHTML = '<div class="empty">Nothing logged yet. Tap a quick meal or add one below.</div>';
     else list.innerHTML = n.entries.slice().reverse().map(e => {
       const time = e.t ? new Date(e.t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
-      return '<div class="entry"><div class="e-t"><b>' + Utils.esc(e.name || 'Meal') + '</b><small class="num">P ' + Math.round(e.prot) + ' &middot; C ' + Math.round(e.carb) + ' &middot; F ' + Math.round(e.fat) + (time ? ' &middot; ' + time : '') + '</small></div>' +
+      const base = String(e.name || '').replace(/ \((½|1½|×[\d.]+)\)$/, '').toLowerCase();
+      const isSaved = AppState.getMeals().some(m => m.name.toLowerCase() === base);
+      return '<div class="entry' + (EatView.editId === e.id ? ' editing' : '') + '"><div class="e-t"><b>' + Utils.esc(e.name || 'Meal') + '</b><small class="num">P ' + Math.round(e.prot) + ' &middot; C ' + Math.round(e.carb) + ' &middot; F ' + Math.round(e.fat) + (time ? ' &middot; ' + time : '') + '</small>' +
+        '<span class="e-acts"><button type="button" class="link" data-action="entry-edit" data-id="' + Utils.esc(e.id) + '">Edit</button>' +
+        (isSaved ? '' : '<button type="button" class="link" data-action="entry-save" data-id="' + Utils.esc(e.id) + '">Save as quick meal</button>') + '</span></div>' +
         '<div class="kc num">' + Utils.fmt(e.cal) + '<small> kcal</small></div>' +
         '<button type="button" class="x-btn" data-action="del-food" data-id="' + Utils.esc(e.id) + '" aria-label="Remove ' + Utils.esc(e.name || 'meal') + '">' + Utils.icon('x', 'i-sm') + '</button></div>';
     }).join('');
@@ -2346,38 +2537,94 @@ const EatView = {
 
     /* last 7 days */
     const days = []; for (let i = 6; i >= 0; i--) days.push(Dates.add(today, -i));
-    let logged = 0, sum = 0, hit = 0;
+    let logged = 0, sum = 0, psum = 0, hit = 0;
     const bars = days.map(d => {
       const x = dayNutrition(d), pct = t.kcal ? x.cal / t.kcal : 0;
-      if (x.cal > 0) { logged++; sum += x.cal; if (pct >= 0.9) hit++; }
+      if (x.cal > 0) { logged++; sum += x.cal; psum += x.prot; if (pct >= 0.9) hit++; }
       const cls = x.cal === 0 ? '' : pct >= 0.9 ? 'hit' : pct >= 0.6 ? 'mid' : 'low';
       return '<div class="wb' + (d === today ? ' today' : '') + '"><div class="col ' + cls + '" data-h="' + Math.max(6, Math.min(100, pct * 100)) + '" title="' + Utils.fmt(x.cal) + ' kcal"></div><span>' + Dates.weekday(d, 'short').slice(0, 2) + '</span></div>';
     }).join('');
     const wk = Utils.el('eat-week'); wk.innerHTML = bars;
     const grow = () => Array.prototype.forEach.call(wk.querySelectorAll('.col'), c => { c.style.height = c.dataset.h + 'px'; });
     requestAnimationFrame(() => requestAnimationFrame(grow)); setTimeout(grow, 120);
-    Utils.el('eat-week-note').textContent = logged ? 'Average ' + Utils.fmt(sum / logged) + ' kcal on logged days. ' + hit + ' of ' + logged + ' within 10% of target.' : 'Your week fills in as you log.';
+    Utils.el('eat-week-note').textContent = logged
+      ? 'Average on logged days: ' + Utils.fmt(sum / logged) + ' kcal and ' + Math.round(psum / logged) + ' g protein (targets ' + Utils.fmt(t.kcal) + ' and ' + t.protein + '). ' + hit + ' of ' + logged + (logged === 1 ? ' day' : ' days') + ' within 10% of your calories.'
+      : 'Your week fills in as you log.';
+    EatView.syncForm();
   },
 
-  add() {
+  syncForm() {
+    const ed = !!EatView.editId;
+    const h = Utils.el('eat-form-h'); if (h) h.textContent = ed ? 'Edit entry' : 'Add food';
+    const b = Utils.el('eat-add'); if (b) b.querySelector('span').textContent = ed ? 'Update entry' : 'Add to today';
+    const c = Utils.el('eat-cancel'); if (c) c.hidden = !ed;
+  },
+  readForm() {
     const g = id => Utils.num(Utils.el(id).value);
     const prot = g('eat-prot') || 0, carb = g('eat-carb') || 0, fat = g('eat-fat') || 0;
     let cal = g('eat-cal');
     if (cal == null) cal = Math.round(prot * 4 + carb * 4 + fat * 9);
-    if (!cal && !prot && !carb && !fat) { Utils.toast('Add calories or macros first'); return; }
-    const today = Dates.today(), cur = dayNutrition(today);
-    const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: Utils.el('eat-name').value.trim() || 'Meal', cal, prot, carb, fat, t: Date.now() };
-    EatView._save(today, cur.entries.concat(entry));
-    ['eat-name', 'eat-cal', 'eat-prot', 'eat-carb', 'eat-fat'].forEach(id => { Utils.el(id).value = ''; });
-    EatView.render();
-    Utils.toast('Added ' + Utils.fmt(cal) + ' kcal');
+    if (!cal && !prot && !carb && !fat) { Utils.toast('Add calories or macros first'); return null; }
+    return { name: Utils.el('eat-name').value.trim() || 'Meal', cal, prot, carb, fat };
   },
+  clearForm() { ['eat-name', 'eat-cal', 'eat-prot', 'eat-carb', 'eat-fat'].forEach(id => { Utils.el(id).value = ''; }); EatView.editId = null; },
+  newId: () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+
+  add() {
+    const f = EatView.readForm(); if (!f) return;
+    const today = Dates.today(), cur = dayNutrition(today);
+    if (EatView.editId) {
+      EatView._save(today, cur.entries.map(e => e.id === EatView.editId ? Object.assign({}, e, f) : e));
+      EatView.clearForm(); EatView.render(); Utils.toast('Entry updated'); return;
+    }
+    EatView._save(today, cur.entries.concat(Object.assign({ id: EatView.newId(), t: Date.now() }, f)));
+    EatView.clearForm(); EatView.render();
+    Utils.toast('Added ' + Utils.fmt(f.cal) + ' kcal');
+  },
+  quickAdd(id) {
+    const m = EatView.library().find(x => x.id === id); if (!m) return;
+    const k = EatView.portion, today = Dates.today(), cur = dayNutrition(today);
+    const label = k === 1 ? '' : k === 0.5 ? ' (½)' : k === 1.5 ? ' (1½)' : ' (×' + k + ')';
+    const r = v => Math.round(v * k * 10) / 10;
+    EatView._save(today, cur.entries.concat({ id: EatView.newId(), name: m.name + label, cal: Math.round(m.cal * k), prot: r(m.prot), carb: r(m.carb), fat: r(m.fat), t: Date.now() }));
+    if (m.saved) { const all = AppState.getMeals().map(x => x.id === m.id ? Object.assign({}, x, { uses: (x.uses || 0) + 1, last: Date.now() }) : x); AppState.saveMeals(all); }
+    EatView.render(); Utils.toast('Added ' + m.name + label);
+  },
+  _storeMeal(f) {
+    const meals = AppState.getMeals().slice(), key = f.name.toLowerCase(), i = meals.findIndex(m => m.name.toLowerCase() === key);
+    const rec = { id: i >= 0 ? meals[i].id : EatView.newId(), name: f.name, cal: f.cal, prot: f.prot, carb: f.carb, fat: f.fat, uses: i >= 0 ? meals[i].uses || 0 : 0, last: Date.now() };
+    if (i >= 0) meals[i] = rec; else meals.push(rec);
+    AppState.saveMeals(meals);
+    Utils.toast(i >= 0 ? 'Updated "' + f.name + '"' : 'Saved "' + f.name + '" as a quick meal');
+  },
+  saveMealForm() {
+    const f = EatView.readForm(); if (!f) return;
+    if (f.name === 'Meal') { Utils.toast('Give it a name first'); Utils.el('eat-name').focus(); return; }
+    EatView._storeMeal(f); EatView.render();
+  },
+  saveEntry(id) {
+    const e = dayNutrition(Dates.today()).entries.find(x => x.id === id); if (!e) return;
+    EatView._storeMeal({ name: String(e.name || 'Meal').replace(/ \((½|1½|×[\d.]+)\)$/, ''), cal: e.cal, prot: e.prot, carb: e.carb, fat: e.fat });
+    EatView.render();
+  },
+  delMeal(id) { AppState.saveMeals(AppState.getMeals().filter(m => m.id !== id)); EatView.render(); },
+  editEntry(id) {
+    const e = dayNutrition(Dates.today()).entries.find(x => x.id === id); if (!e) return;
+    EatView.editId = id;
+    Utils.el('eat-name').value = e.name || ''; Utils.el('eat-cal').value = e.cal; Utils.el('eat-prot').value = e.prot; Utils.el('eat-carb').value = e.carb; Utils.el('eat-fat').value = e.fat;
+    EatView.render();
+    const f = Utils.el('eat-form'); if (f && f.scrollIntoView) f.scrollIntoView({ behavior: Utils.reduced() ? 'auto' : 'smooth', block: 'center' });
+  },
+  cancelEdit() { EatView.clearForm(); EatView.render(); },
+  setPortion(v) { EatView.portion = Number(v) || 1; EatView.render(); },
+  toggleManage() { EatView.manage = !EatView.manage; EatView.render(); },
   remove(id) {
     const today = Dates.today(), cur = dayNutrition(today);
     EatView._save(today, cur.entries.filter(e => e.id !== id));
+    if (EatView.editId === id) EatView.clearForm();
     EatView.render();
   },
-  clearDay() { EatView._save(Dates.today(), []); EatView.render(); Utils.toast('Today cleared'); },
+  clearDay() { EatView._save(Dates.today(), []); EatView.clearForm(); EatView.render(); Utils.toast('Today cleared'); },
   _save(date, entries) {
     const sum = k => entries.reduce((a, e) => a + (Number(e[k]) || 0), 0);
     AppState.saveNutrition(date, { cal: sum('cal'), prot: sum('prot'), carb: sum('carb'), fat: sum('fat'), entries });
@@ -2402,8 +2649,10 @@ const ProgressView = {
       '<div class="stat"><small>Upper arm</small><b class="num">' + (a.length ? a[0].arm : '–') + (a.length ? '<u>cm</u>' : '') + '</b>' + (a.length > 1 ? dlt(a[0].arm, a[a.length - 1].arm, 'cm', true) : '<em>log it to track</em>') + '</div>' +
       '<div class="stat"><small>Waist</small><b class="num">' + (ws.length ? ws[0].waist : '–') + (ws.length ? '<u>cm</u>' : '') + '</b>' + (ws.length > 1 ? dlt(ws[0].waist, ws[ws.length - 1].waist, 'cm', false) : '<em>log it to track</em>') + '</div>';
 
-    const pts = w.slice(0, 30).reverse().map(x => ({ v: x.weight, d: x.date }));
-    Utils.el('p-chart').innerHTML = Chart.weight(pts, goal || null);
+    const ser = Trends.series(), shown = ser.slice(-45), mv = Trends.moving(ser).slice(-45);
+    Utils.el('p-trend').innerHTML = Trends.cardHtml();
+    Utils.el('p-chart').innerHTML = Chart.weight(shown.map(x => ({ v: x.v, d: x.d })), goal || null, mv) + (shown.length > 3 ? '<p class="small muted" style="margin-top:6px">Thin line: each weigh-in. Dashed line: 7-day average.</p>' : '');
+    Utils.el('p-weeks').innerHTML = Trends.weeksHtml(4);
 
     const hist = Utils.el('p-hist');
     hist.innerHTML = m.length ? m.slice(0, 20).map((e, i) => {
@@ -2411,7 +2660,7 @@ const ProgressView = {
       const d = e.weight && prev ? e.weight - prev.weight : null;
       return '<div class="hrow"><div><b>' + Dates.fmt(e.date) + (e.note ? ' &middot; ' + Utils.esc(e.note) : '') + '</b><small class="num">' +
         [e.weight ? e.weight + ' kg' : '', e.waist ? 'waist ' + e.waist + ' cm' : '', e.arm ? 'arm ' + e.arm + ' cm' : ''].filter(Boolean).join(' &middot; ') + '</small></div>' +
-        (d != null ? '<span class="chip ' + (d >= 0 ? '' : 'chip-coral') + ' num">' + (d >= 0 ? '+' : '') + d.toFixed(1) + ' kg</span>' : '') + '</div>';
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">' + (d != null ? '<span class="chip ' + (d >= 0 ? '' : 'chip-coral') + ' num">' + (d >= 0 ? '+' : '') + d.toFixed(1) + ' kg</span>' : '') + '<button type="button" class="link" data-action="meas-del" data-saved="' + (e.savedAt || '') + '" style="font-size:.78rem">Delete</button></div></div>';
     }).join('') : '<div class="empty">No measurements yet. Your first entry starts the trend.</div>';
 
     ProgressView.renderPhotos();
@@ -2439,6 +2688,7 @@ const ProgressView = {
     } catch (e) { Utils.toast(e.message || 'Could not use that photo'); }
   },
 
+  del(savedAt) { AppState.removeMeasurement(Number(savedAt)); ProgressView.render(); Utils.toast('Entry deleted'); },
   save() {
     const weight = Utils.num(Utils.el('m-weight').value), waist = Utils.num(Utils.el('m-waist').value), arm = Utils.num(Utils.el('m-arm').value);
     if (weight == null && waist == null && arm == null) { Utils.toast('Enter at least one value'); return; }
@@ -2469,6 +2719,7 @@ const ReviewView = {
   render() {
     const s = ReviewView.suggest();
     const sel = ReviewView.sel;
+    const rw = Utils.el('rev-weeks'); if (rw) rw.innerHTML = Trends.weeksHtml(4);
     if (sel.training == null) sel.training = Math.min(6, s.trained);
     if (sel.protein == null) sel.protein = s.protHit;
     Utils.el('hint-training').textContent = 'Your log: ' + s.trained + ' sessions in the last 7 days (target ' + s.sessions + ')';
@@ -2531,10 +2782,32 @@ const LibraryView = {
   setFilter(g) { LibraryView.filter = g; LibraryView.render(); }
 };
 
-const SuppsView = { render() { Checkin.render('supp-tiles', Checkin.supps); } };
+const SuppsView = {
+  render() {
+    const log = AppState.getSuppLog() || {};
+    Utils.el('supp-log').innerHTML = Checkin.supps.map(t => {
+      const l = log[t.key] || {};
+      return '<div class="card supp"><div class="supp-h"><span class="ico">' + Utils.icon(t.icon) + '</span><b>' + t.label + '</b></div><div class="form-grid">' +
+        '<label class="field full"><span>Product and brand</span><input class="in" id="sp-' + t.key + '-product" type="text" maxlength="60" value="' + Utils.esc(l.product || '') + '"></label>' +
+        '<label class="field full"><span>Amount per serving (from the label)</span><input class="in" id="sp-' + t.key + '-per" type="text" maxlength="60" placeholder="' + (t.key === 'omega3' ? 'e.g. 600 mg EPA + DHA per capsule' : t.key === 'd3' ? 'e.g. 20 µg (800 IU) per tablet' : t.key === 'zinc' ? 'e.g. 10 mg per tablet' : 'e.g. 3 g per scoop') + '" value="' + Utils.esc(l.per || '') + '"></label>' +
+        '<label class="field"><span>Servings per day</span><input class="in" id="sp-' + t.key + '-n" type="text" inputmode="decimal" value="' + Utils.esc(l.n || '') + '"></label>' +
+        '<label class="field"><span>Notes</span><input class="in" id="sp-' + t.key + '-note" type="text" maxlength="80" value="' + Utils.esc(l.note || '') + '"></label></div>' +
+        '<button type="button" class="btn btn-soft btn-block" style="margin-top:12px" data-action="supp-save" data-key="' + t.key + '">Save ' + t.label + '</button></div>';
+    }).join('');
+    Checkin.render('supp-tiles', Checkin.suppList());
+  },
+  save(key) {
+    const g = id => Utils.el('sp-' + key + '-' + id).value.trim();
+    const log = Object.assign({}, AppState.getSuppLog() || {});
+    log[key] = { product: g('product'), per: g('per'), n: g('n'), note: g('note') };
+    AppState.saveSuppLog(log);
+    Checkin.render('supp-tiles', Checkin.suppList());
+    Utils.toast('Saved');
+  }
+};
 
 const ProfileView = {
-  FIELDS: { name: 'p-name', sex: 'p-sex', age: 'p-age', height: 'p-height', weight: 'p-weight', goalWeight: 'p-goal', experience: 'p-exp', startDate: 'p-start', targetDate: 'p-target', perWeek: 'p-perweek', priority: 'p-priority' },
+  FIELDS: { name: 'p-name', sex: 'p-sex', age: 'p-age', height: 'p-height', weight: 'p-weight', goalWeight: 'p-goal', experience: 'p-exp', startDate: 'p-start', targetDate: 'p-target', perWeek: 'p-perweek', priority: 'p-priority', rate: 'p-rate' },
   render() {
     const p = AppState.getProfile(); if (!p) return;
     const F = ProfileView.FIELDS;
@@ -2565,7 +2838,7 @@ const ProfileView = {
     if (!targets) { Utils.toast('Fill in all five targets'); return; }
     const p = Object.assign({}, old, {
       name, sex: g('p-sex'), age: Utils.num(g('p-age')), height: Utils.num(g('p-height')), weight: Utils.num(g('p-weight')), goalWeight: Utils.num(g('p-goal')),
-      experience: g('p-exp'), startDate: Dates.valid(g('p-start')) ? g('p-start') : old.startDate, targetDate: Dates.valid(g('p-target')) ? g('p-target') : '', perWeek: Math.max(2, Math.min(6, Number(g('p-perweek')) || 5)), priority: g('p-priority') || '', targets
+      experience: g('p-exp'), startDate: Dates.valid(g('p-start')) ? g('p-start') : old.startDate, targetDate: Dates.valid(g('p-target')) ? g('p-target') : '', perWeek: Math.max(2, Math.min(6, Number(g('p-perweek')) || 5)), priority: g('p-priority') || '', rate: Utils.num(g('p-rate')), targets
     });
     AppState.saveProfile(p);
     ProfileView.render(); Dashboard.render(); EatView.render();
@@ -2716,11 +2989,13 @@ const Coach = {
       return '<div class="coach-done"><div><small>Today</small><b>' + Utils.esc(m.isRest ? 'Rest day' : m.label) + '</b></div>' +
         (done ? '<span class="chip">Done</span>' : '<button type="button" class="btn btn-soft" data-action="coach-change">Change</button>') + '</div>';
     }
-    const c = (AppState.getCheckin(today) || {}).coach || {}, a = { sleep: c.sleep || 'ok', energy: c.energy || 'ok', sore: c.sore || {}, pain: !!c.pain };
+    const c = (AppState.getCheckin(today) || {}).coach || {}, a = { sleep: c.sleep || 'ok', energy: c.energy || 'ok', stress: c.stress, motivation: c.motivation, sore: c.sore || {}, pain: !!c.pain };
     const sg = CycleEngine.suggest();
     let h = '<h2 class="card-title">How are you today?</h2><p class="card-sub">20 seconds. Tap what is true, skip the rest.</p><div class="coach-form">' +
       '<div class="coach-row"><span>Sleep</span>' + Coach.seg('sleep', '', [['poor', 'Poor'], ['ok', 'OK'], ['good', 'Good']], a.sleep) + '</div>' +
       '<div class="coach-row"><span>Energy</span>' + Coach.seg('energy', '', [['low', 'Low'], ['ok', 'OK'], ['high', 'High']], a.energy) + '</div>' +
+      '<div class="coach-row"><span>Stress</span>' + Coach.seg('stress', '', [['low', 'Low'], ['ok', 'OK'], ['high', 'High']], a.stress) + '</div>' +
+      '<div class="coach-row"><span>Motivation</span>' + Coach.seg('motivation', '', [['low', 'Low'], ['ok', 'OK'], ['high', 'High']], a.motivation) + '</div>' +
       '<p class="small muted" style="margin:14px 0 2px">Sore anywhere?</p>' +
       SORE_GROUPS.map(g => '<div class="coach-row"><span>' + g[1] + '</span>' + Coach.seg('sore', g[0], [['none', 'No'], ['some', 'A bit'], ['very', 'Very']], a.sore[g[0]] || 'none') + '</div>').join('') +
       '<button type="button" class="coach-pain" data-action="coach-pain" aria-pressed="' + a.pain + '">Pain or injury somewhere</button></div>';
@@ -2762,12 +3037,361 @@ const Coach = {
 };
 
 'use strict';
+/* ═══ history: calendar, edit old sessions, personal records ═════════════════ */
+
+const Records = {
+  /** Estimated one-rep max (Epley). Used only to compare sets with each other. */
+  e1rm(weight, reps) {
+    const w = Utils.num(weight), r = Utils.num(reps);
+    if (!(w > 0) || !(r > 0) || r > 30) return 0;
+    return r === 1 ? w : w * (1 + r / 30);
+  },
+  best(sets) {
+    let b = null;
+    (sets || []).forEach(s => {
+      const e = Records.e1rm(s.weight, s.reps);
+      if (e > 0 && (!b || e > b.e1rm)) b = { e1rm: e, weight: Utils.num(s.weight), reps: Utils.num(s.reps) };
+    });
+    return b;
+  },
+  volume(log) {
+    let v = 0;
+    ((log && log.exercises) || []).forEach(e => (e.sets || []).forEach(s => {
+      const w = Utils.num(s.weight), r = Utils.num(s.reps);
+      if (w > 0 && r > 0) v += w * r;
+    }));
+    return Math.round(v);
+  },
+  setCount(log) { let n = 0; ((log && log.exercises) || []).forEach(e => (e.sets || []).forEach(s => { if (s.done || (s.weight && s.reps)) n++; })); return n; },
+  /** Best set per exercise from finished sessions before `before` (all of them when omitted). */
+  table(before) {
+    const out = {}, logs = AppState.getWorkoutLogs();
+    Object.keys(logs).sort().forEach(d => {
+      if (before && d >= before) return;
+      const l = logs[d]; if (!l || !l.completed) return;
+      (l.exercises || []).forEach(e => {
+        const b = Records.best(e.sets);
+        if (b && (!out[e.id] || b.e1rm > out[e.id].e1rm)) out[e.id] = Object.assign({ name: e.name, date: d }, b);
+      });
+    });
+    return out;
+  },
+  /** Exercises where this session beat everything logged before it. */
+  prs(log) {
+    const prior = Records.table(log.date), out = [];
+    (log.exercises || []).forEach(e => {
+      const b = Records.best(e.sets), p = prior[e.id];
+      if (b && p && b.e1rm > p.e1rm + 0.01) out.push({ id: e.id, name: e.name, weight: b.weight, reps: b.reps, was: p });
+    });
+    return out;
+  },
+  prevSame(log) {
+    const logs = AppState.getWorkoutLogs();
+    const ds = Object.keys(logs).filter(d => d < log.date && logs[d].completed && logs[d].sessionKey === log.sessionKey).sort();
+    return ds.length ? logs[ds[ds.length - 1]] : null;
+  },
+  blank(key, date) {
+    return {
+      sessionKey: key, date, completed: false, startedAt: Date.now(), backfilled: true,
+      exercises: WORKOUTS[key].exercises.map(ex => ({ id: ex.id, name: ex.name, sets: Array.from({ length: ex.sets }, () => ({ weight: '', reps: '', rir: '', done: false })) }))
+    };
+  },
+  kg: n => Utils.fmt(n) + ' kg',
+  /** Shown on Train once a session is logged: volume against last time and new records. */
+  summaryHtml(log) {
+    const vol = Records.volume(log), prev = Records.prevSame(log), pv = prev ? Records.volume(prev) : 0;
+    const meta = CYCLE_META[log.sessionKey] || { short: 'session' };
+    let delta = '';
+    if (prev && pv > 0 && vol > 0) {
+      const p = Math.round((vol - pv) / pv * 100);
+      delta = (p > 0 ? '+' : '') + p + '% vs ' + Dates.fmt(prev.date, { day: 'numeric', month: 'short' });
+    } else if (vol > 0) delta = 'First time with weights logged';
+    const prs = Records.prs(log);
+    return '<div class="card" style="margin-top:14px"><div class="wrap-grid"><div><small>Volume</small><b class="num">' + (vol ? Records.kg(vol) : '–') + '</b><span>' + Utils.esc(delta || 'Add weights to see this') + '</span></div>' +
+      '<div><small>Sets logged</small><b class="num">' + Records.setCount(log) + '</b><span>' + Utils.esc(meta.short) + '</span></div></div>' +
+      (prs.length ? '<ul class="prs">' + prs.map(p => '<li><span class="chip chip-amber">New best</span><span><b>' + Utils.esc(p.name) + '</b> ' + p.weight + ' kg &times; ' + p.reps + '<small> was ' + p.was.weight + ' &times; ' + p.was.reps + '</small></span></li>').join('') + '</ul>' : '') + '</div>';
+  }
+};
+
+const HistoryView = {
+  month: null, sel: null, editing: false, showAll: false,
+
+  _log() { return AppState.getWorkoutLog(HistoryView.sel); },
+  _save(l) { AppState.saveWorkoutLog(HistoryView.sel, l); },
+  _def(log, id) { const w = WORKOUTS[log.sessionKey]; return w && w.exercises ? w.exercises.find(x => x.id === id) : null; },
+
+  render() {
+    const root = Utils.el('hist-root'); if (!root) return;
+    const today = Dates.today();
+    if (!HistoryView.month) HistoryView.month = today.slice(0, 7);
+    if (!HistoryView.sel) HistoryView.sel = today;
+    root.innerHTML = HistoryView.calendarHtml() + HistoryView.detailHtml() + HistoryView.recordsHtml();
+  },
+
+  calendarHtml() {
+    const ym = HistoryView.month, first = ym + '-01', today = Dates.today();
+    const next = Dates.parse(first); next.setUTCMonth(next.getUTCMonth() + 1);
+    const days = Math.round((next - Dates.parse(first)) / 86400000);
+    const lead = (Dates.parse(first).getUTCDay() + 6) % 7;            // Monday first
+    let done = 0, vol = 0, cells = '';
+    for (let i = 0; i < lead; i++) cells += '<span class="cal-blank"></span>';
+    for (let n = 1; n <= days; n++) {
+      const d = ym + '-' + String(n).padStart(2, '0'), log = AppState.getWorkoutLog(d);
+      let cls = 'cal-d', inner = '<i>' + n + '</i>', label = Dates.fmt(d, { weekday: 'long', day: 'numeric', month: 'long' });
+      if (log && log.completed) { cls += ' done'; done++; vol += Records.volume(log); inner += '<b>' + ((CYCLE_META[log.sessionKey] || {}).letter || '·') + '</b>'; label += ', ' + (CYCLE_META[log.sessionKey] || {}).short + ' logged'; }
+      else if (log) { cls += ' part'; inner += '<b>·</b>'; label += ', unfinished session'; }
+      if (d === today) cls += ' today';
+      if (d === HistoryView.sel) cls += ' sel';
+      if (d > today) cls += ' future';
+      cells += '<button type="button" class="' + cls + '" data-action="hist-day" data-date="' + d + '" aria-label="' + Utils.esc(label) + '"' + (d === HistoryView.sel ? ' aria-current="date"' : '') + '>' + inner + '</button>';
+    }
+    const dow = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => '<span>' + x + '</span>').join('');
+    return '<div class="card"><div class="cal-head"><button type="button" class="x-btn" data-action="hist-prev" aria-label="Previous month">' + Utils.icon('chev', 'i-sm cal-prev') + '</button>' +
+      '<b>' + Utils.esc(Dates.fmt(first, { month: 'long', year: 'numeric' })) + '</b>' +
+      '<button type="button" class="x-btn" data-action="hist-next" aria-label="Next month">' + Utils.icon('chev', 'i-sm cal-next') + '</button></div>' +
+      '<div class="cal-dow">' + dow + '</div><div class="cal-grid">' + cells + '</div>' +
+      '<p class="small muted" style="margin-top:12px">' + done + ' ' + (done === 1 ? 'session' : 'sessions') + ' this month' + (vol ? ' &middot; ' + Records.kg(vol) + ' lifted' : '') + '</p></div>';
+  },
+
+  detailHtml() {
+    const d = HistoryView.sel, today = Dates.today(), log = HistoryView._log();
+    const title = Dates.fmt(d, { weekday: 'long', day: 'numeric', month: 'long' });
+    if (!log) {
+      if (d > today) {
+        const e = CycleEngine.entryFor(d);
+        return '<section><h2 class="sec-h">' + Utils.esc(title) + '</h2><div class="empty">Planned: ' + Utils.esc(e && e.sessionKey ? CYCLE_META[e.sessionKey].label : 'nothing yet') + '. Sessions are logged on the day.</div></section>';
+      }
+      const p = AppState.getProfile();
+      if (p && p.startDate && d < p.startDate) return '<section><h2 class="sec-h">' + Utils.esc(title) + '</h2><div class="empty">This is before your start date.</div></section>';
+      return '<section><h2 class="sec-h">' + Utils.esc(title) + '</h2><div class="card"><p>No session logged. Did you train and forget to log it?</p><p class="small muted" style="margin:6px 0 12px">Pick the session and fill in what you remember.</p><div class="coach-opts">' +
+        SESSION_ORDER.map(k => '<button type="button" class="btn btn-soft" data-action="hist-new" data-key="' + k + '">' + Utils.esc(CYCLE_META[k].label) + '</button>').join('') + '</div></div></section>';
+    }
+    const ed = HistoryView.editing, w = WORKOUTS[log.sessionKey] || { label: 'Session' };
+    let h = '<section><h2 class="sec-h">' + Utils.esc(title) + '</h2><div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div><h3 class="card-title">' + Utils.esc(w.label) + '</h3>' +
+      '<p class="card-sub num">' + (Records.volume(log) ? Records.kg(Records.volume(log)) + ' &middot; ' : '') + Records.setCount(log) + ' sets</p></div>' +
+      '<span class="chip' + (log.completed ? '' : ' chip-amber') + '">' + (log.completed ? 'Logged' : 'Not finished') + '</span></div>';
+    (log.exercises || []).forEach((e, i) => {
+      const def = HistoryView._def(log, e.id);
+      if (def && def.kind === 'warmup') return;
+      const sets = e.sets || [];
+      if (!ed && !sets.some(s => s.weight || s.reps)) return;
+      h += '<div class="h-ex"><b>' + Utils.esc(e.name) + '</b>';
+      if (!ed) {
+        h += '<span class="num">' + sets.filter(s => s.weight || s.reps).map(s => (s.weight || '–') + '&times;' + (s.reps || '–')).join(' &middot; ') + '</span>';
+      } else {
+        h += '<div class="set-h"><span></span><span>KG</span><span>REPS</span><span>RIR</span><span></span></div>';
+        sets.forEach((s, j) => {
+          h += '<div class="set"><span class="sn">' + (j + 1) + '</span>' +
+            ['weight', 'reps', 'rir'].map(f => '<input class="in h-in" type="text" inputmode="decimal" aria-label="Set ' + (j + 1) + ' ' + f + '" data-ex="' + i + '" data-set="' + j + '" data-f="' + f + '" value="' + Utils.esc(s[f] || '') + '">').join('') +
+            '<button type="button" class="set-done" data-action="hist-set-done" data-ex="' + i + '" data-set="' + j + '" aria-pressed="' + !!s.done + '" aria-label="Set ' + (j + 1) + ' done">' + Utils.icon('check') + '</button></div>';
+        });
+      }
+      h += '</div>';
+    });
+    h += '<div class="btn-row" style="margin-top:16px">';
+    if (ed) {
+      h += log.completed
+        ? '<button type="button" class="btn" data-action="hist-edit-done">Save changes</button>'
+        : '<button type="button" class="btn" data-action="hist-complete">Save as completed session</button><button type="button" class="btn btn-ghost" data-action="hist-edit-done">Close</button>';
+    } else {
+      h += '<button type="button" class="btn btn-soft" data-action="hist-edit">Edit</button>' + (log.completed ? '' : '<button type="button" class="btn" data-action="hist-complete">Mark completed</button>');
+    }
+    h += '<button type="button" class="btn btn-danger" data-action="hist-del" style="flex:0 0 auto">Delete</button></div></div></section>';
+    return h;
+  },
+
+  recordsHtml() {
+    const t = Records.table(), rows = Object.keys(t).map(id => Object.assign({ id }, t[id])).sort((a, b) => b.date.localeCompare(a.date) || b.e1rm - a.e1rm);
+    const today = Dates.today();
+    if (!rows.length) return '<section><h2 class="sec-h">Personal records</h2><div class="empty">Your best sets show up here once you have logged weights in a finished session.</div></section>';
+    const shown = HistoryView.showAll ? rows : rows.slice(0, 8);
+    return '<section><div class="sec-row"><h2 class="sec-h">Personal records</h2>' + (rows.length > 8 ? '<button type="button" class="link" data-action="hist-all">' + (HistoryView.showAll ? 'Show less' : 'Show all ' + rows.length) + '</button>' : '') + '</div><div class="hist">' +
+      shown.map(r => '<div class="hrow"><div><b>' + Utils.esc(r.name) + '</b><small class="num">' + r.weight + ' kg &times; ' + r.reps + ' &middot; ' + Dates.fmt(r.date, { day: 'numeric', month: 'short' }) + '</small></div>' +
+        (Dates.diff(r.date, today) <= 14 ? '<span class="chip chip-amber">Recent</span>' : '<span class="small muted num">~' + Math.round(r.e1rm) + ' kg 1RM</span>') + '</div>').join('') +
+      '</div><p class="small muted" style="margin-top:8px">The best set is the one with the highest estimated one-rep max, so 40 &times; 12 can beat 45 &times; 6.</p></section>';
+  },
+
+  shift(n) {
+    const d = Dates.parse(HistoryView.month + '-01'); d.setUTCMonth(d.getUTCMonth() + n);
+    HistoryView.month = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+    HistoryView.render();
+  },
+  pick(d) { HistoryView.sel = d; HistoryView.editing = false; HistoryView.render(); const x = document.querySelector('#hist-root section'); if (x && x.scrollIntoView && Nav.current === 'history') x.scrollIntoView({ behavior: Utils.reduced() ? 'auto' : 'smooth', block: 'nearest' }); },
+  edit(on) { HistoryView.editing = !!on; HistoryView.render(); },
+  updateSet(i, j, f, v) {
+    const l = HistoryView._log(); if (!l || !l.exercises[i] || !l.exercises[i].sets[j]) return;
+    l.exercises[i].sets[j][f] = v.trim(); HistoryView._save(l);
+  },
+  toggleSet(i, j, btn) {
+    const l = HistoryView._log(); if (!l) return;
+    const s = l.exercises[i].sets[j]; s.done = !s.done; btn.setAttribute('aria-pressed', String(s.done)); HistoryView._save(l);
+  },
+  create(key) {
+    const d = HistoryView.sel; if (!WORKOUTS[key] || AppState.getWorkoutLog(d)) return;
+    AppState.saveWorkoutLog(d, Records.blank(key, d));
+    CycleEngine.decide(d, key);
+    HistoryView.editing = true; HistoryView.render();
+  },
+  complete() {
+    const l = HistoryView._log(), d = HistoryView.sel; if (!l) return;
+    l.completed = true; l.completedAt = l.completedAt || Date.now(); HistoryView._save(l);
+    CycleEngine.decide(d, l.sessionKey); CycleEngine.markDone(d);
+    AppState.saveCheckin(d, Object.assign({}, AppState.getCheckin(d) || {}, { trained: true, savedAt: Date.now() }));
+    HistoryView.editing = false; HistoryView.render(); Utils.toast('Session saved');
+  },
+  remove() {
+    const d = HistoryView.sel; if (!AppState.getWorkoutLog(d)) return;
+    AppState.removeWorkoutLog(d);
+    CycleEngine.markPending(d); CycleEngine.undecide(d);
+    AppState.saveCheckin(d, Object.assign({}, AppState.getCheckin(d) || {}, { trained: false }));
+    HistoryView.editing = false; HistoryView.render(); Utils.toast('Session deleted');
+  }
+};
+
+'use strict';
+/* ═══ trends: weight against a target rate, week-by-week averages ════════════
+ * Judges averages, not single weigh-ins. Daily weight moves by 1 to 2 kg from
+ * water and food alone, so one number means very little. */
+
+const FEEL = {
+  sleep: { poor: 1, ok: 2, good: 3, words: ['poor', 'ok', 'good'] },
+  stress: { low: 1, ok: 2, high: 3, words: ['low', 'ok', 'high'] },
+  motivation: { low: 1, ok: 2, high: 3, words: ['low', 'ok', 'high'] }
+};
+
+const Trends = {
+  /** One point per date (several weigh-ins on a day are averaged), oldest first. */
+  series() {
+    const by = {};
+    AppState.getMeasurements().forEach(m => { if (m && m.weight > 0 && Dates.valid(m.date)) (by[m.date] = by[m.date] || []).push(m.weight); });
+    return Object.keys(by).sort().map(d => ({ d, v: by[d].reduce((a, b) => a + b, 0) / by[d].length }));
+  },
+  avg(series, from, to) {
+    const xs = series.filter(p => p.d >= from && p.d <= to);
+    return xs.length ? xs.reduce((a, p) => a + p.v, 0) / xs.length : null;
+  },
+  /** Trailing 7-day average at each point, for the chart. */
+  moving(series) { return series.map(p => Trends.avg(series, Dates.add(p.d, -6), p.d)); },
+  /** kg per week from a straight line through the last `days` days, or null when there is too little data. */
+  slope(series, days) {
+    const from = Dates.add(Dates.today(), -(days || 28)), xs = series.filter(p => p.d >= from);
+    if (xs.length < 3) return null;
+    const span = Dates.diff(xs[0].d, xs[xs.length - 1].d);
+    if (span < 7) return null;
+    const x0 = xs[0].d, n = xs.length;
+    let sx = 0, sy = 0, sxy = 0, sxx = 0;
+    xs.forEach(p => { const x = Dates.diff(x0, p.d); sx += x; sy += p.v; sxy += x * p.v; sxx += x * x; });
+    const den = n * sxx - sx * sx; if (!den) return null;
+    return (n * sxy - sx * sy) / den * 7;
+  },
+  /** What the plan asks for, in kg per week. */
+  target(cur) {
+    const p = AppState.getProfile() || {}, goal = p.goalWeight || null;
+    let rate = null, source = 'none';
+    if (p.rate != null && p.rate !== '' && isFinite(Number(p.rate))) { rate = Number(p.rate); source = 'set'; }
+    else if (goal && cur) { rate = goal > cur + 0.2 ? 0.25 : goal < cur - 0.2 ? -0.4 : 0; source = 'default'; }
+    let needed = null;
+    if (goal && cur && p.targetDate && Dates.valid(p.targetDate)) {
+      const weeks = Dates.diff(Dates.today(), p.targetDate) / 7;
+      if (weeks > 0.5) needed = (goal - cur) / weeks;
+    }
+    return { rate, source, goal, needed };
+  },
+  status() {
+    const s = Trends.series(), today = Dates.today(), p = AppState.getProfile() || {};
+    const avg7 = Trends.avg(s, Dates.add(today, -6), today), prev7 = Trends.avg(s, Dates.add(today, -13), Dates.add(today, -7));
+    const cur = avg7 != null ? avg7 : (s.length ? s[s.length - 1].v : p.weight || null);
+    const t = Trends.target(cur), span = s.length ? Dates.diff(s[0].d, s[s.length - 1].d) : 0;
+    const actual = Trends.slope(s, 28);
+    const out = { avg7, prev7, actual, target: t.rate, goal: t.goal, needed: t.needed, state: 'few', text: '', advice: '', eta: null, points: s.length };
+    if (actual == null || s.length < 3) {
+      out.text = 'Weigh in about three times a week, in the morning, same conditions. This card becomes useful after roughly two weeks of data.';
+      return out;
+    }
+    if (t.rate == null) { out.state = 'none'; out.text = 'Set a goal weight in Profile to compare your trend with a plan.'; return out; }
+    const diff = actual - t.rate, tol = 0.1;
+    const gaining = t.rate >= 0;
+    const slower = gaining ? diff < -tol : diff > tol, faster = gaining ? diff > tol : diff < -tol;
+    const kcal = Math.max(100, Math.min(400, Math.round(Math.abs(diff) * 1100 / 50) * 50));
+    const enough = span >= 14;
+    if (!slower && !faster) { out.state = 'on'; out.text = 'On track. You are ' + (gaining ? 'gaining' : 'changing') + ' about as planned.'; out.advice = 'Keep eating the same and look again in two weeks.'; }
+    else if (slower) {
+      out.state = 'slow';
+      out.text = (gaining ? 'Gaining' : 'Losing') + ' slower than planned.';
+      out.advice = enough ? (gaining ? 'Add about ' + kcal + ' kcal a day, for example a gainer shake or an extra snack, for two weeks, then check again.' : 'Take about ' + kcal + ' kcal a day off for two weeks, then check again.') : 'Give it another week before changing anything.';
+    } else {
+      out.state = 'fast';
+      out.text = (gaining ? 'Gaining' : 'Losing') + ' faster than planned.' + (gaining ? ' Part of that will be fat.' : '');
+      out.advice = enough ? (gaining ? 'Trim about ' + kcal + ' kcal a day, or keep going if your waist is staying put.' : 'Add about ' + kcal + ' kcal a day so you keep your muscle.') : 'Give it another week before changing anything.';
+    }
+    if (t.goal && cur && Math.abs(actual) >= 0.05 && (t.goal - cur) * actual > 0) {
+      const weeks = (t.goal - cur) / actual;
+      if (weeks > 0 && weeks <= 104) out.eta = Dates.add(today, Math.round(weeks * 7));
+    }
+    return out;
+  },
+
+  /** n calendar-style 7-day blocks, newest first. */
+  weeks(n) {
+    const today = Dates.today(), s = Trends.series(), logs = AppState.getWorkoutLogs(), out = [];
+    for (let k = 0; k < (n || 4); k++) {
+      const end = Dates.add(today, -7 * k), start = Dates.add(end, -6);
+      let sessions = 0, days = 0, kcal = 0, prot = 0;
+      const feel = { sleep: [], stress: [], motivation: [] };
+      for (let i = 0; i < 7; i++) {
+        const d = Dates.add(start, i), l = logs[d];
+        if (l && l.completed) sessions++;
+        const nu = dayNutrition(d);
+        if (nu.cal > 0) { days++; kcal += nu.cal; prot += nu.prot; }
+        const co = (AppState.getCheckin(d) || {}).coach || {};
+        Object.keys(feel).forEach(f => { if (co[f] && FEEL[f][co[f]]) feel[f].push(FEEL[f][co[f]]); });
+      }
+      const fa = {};
+      Object.keys(feel).forEach(f => { if (feel[f].length) { const a = feel[f].reduce((x, y) => x + y, 0) / feel[f].length; fa[f] = FEEL[f].words[Math.max(0, Math.min(2, Math.round(a) - 1))]; fa[f + 'N'] = feel[f].length; } });
+      out.push({ k, start, end, weight: Trends.avg(s, start, end), sessions, days, kcal: days ? kcal / days : null, prot: days ? prot / days : null, feel: fa });
+    }
+    return out;
+  },
+
+  cardHtml() {
+    const st = Trends.status();
+    const d = st.avg7 != null && st.prev7 != null ? st.avg7 - st.prev7 : null;
+    const sgn = v => (v > 0 ? '+' : '') + v.toFixed(2);
+    let h = '<div class="stats"><div class="stat"><small>7-day average</small><b class="num">' + (st.avg7 != null ? st.avg7.toFixed(1) : '–') + (st.avg7 != null ? '<u>kg</u>' : '') + '</b>' +
+      (d != null ? '<em class="' + (d >= 0 ? 'up' : 'down') + '">' + (d >= 0 ? '+' : '') + d.toFixed(1) + ' kg vs the week before</em>' : '<em>needs two weeks of weigh-ins</em>') + '</div>' +
+      '<div class="stat"><small>Pace</small><b class="num">' + (st.actual != null ? sgn(st.actual) : '–') + (st.actual != null ? '<u>kg/wk</u>' : '') + '</b><em>' + (st.target != null ? 'plan ' + sgn(st.target) + ' kg/wk' : 'no plan set') + '</em></div></div>';
+    const cls = { on: 'chip', slow: 'chip chip-amber', fast: 'chip chip-amber', few: 'chip chip-blue', none: 'chip chip-blue' }[st.state];
+    const label = { on: 'On track', slow: 'Slower than plan', fast: 'Faster than plan', few: 'Not enough data yet', none: 'No target' }[st.state];
+    h += '<div class="card" style="margin-top:12px"><span class="' + cls + '">' + label + '</span><p style="margin-top:10px">' + Utils.esc(st.text) + '</p>' +
+      (st.advice ? '<p class="muted" style="margin-top:6px">' + Utils.esc(st.advice) + '</p>' : '') +
+      (st.eta ? '<p class="small muted" style="margin-top:8px">At this pace you reach ' + st.goal + ' kg around ' + Dates.fmt(st.eta, { day: 'numeric', month: 'long', year: 'numeric' }) + '.</p>' : '') +
+      (st.needed != null && Math.abs(st.needed) > 0.5 ? '<p class="small" style="margin-top:8px;color:var(--amber)">Your target date needs ' + sgn(st.needed) + ' kg a week. That is faster than a lean bulk usually allows, so expect to move the date.</p>' : '') +
+      '<p class="small muted" style="margin-top:8px">One weigh-in swings by 1 to 2 kg from water and food. Judge the average.</p></div>';
+    return h;
+  },
+
+  weeksHtml(n) {
+    const ws = Trends.weeks(n || 4);
+    const name = w => w.k === 0 ? 'Last 7 days' : w.k === 1 ? 'Week before' : (w.start.slice(0, 7) === w.end.slice(0, 7) ? Number(w.start.slice(8)) : Dates.fmt(w.start, { day: 'numeric', month: 'short' })) + '\u2013' + Dates.fmt(w.end, { day: 'numeric', month: 'short' });
+    let h = '<div class="card"><div class="wk-wrap"><table class="wk"><thead><tr><th></th><th>Weight</th><th>Sessions</th><th>Calories</th><th>Protein</th></tr></thead><tbody>' +
+      ws.map(w => '<tr><th scope="row">' + Utils.esc(name(w)) + '</th><td class="num">' + (w.weight != null ? w.weight.toFixed(1) : '–') + '</td><td class="num">' + w.sessions + '</td><td class="num">' + (w.kcal != null ? Utils.fmt(w.kcal) : '–') + '</td><td class="num">' + (w.prot != null ? Math.round(w.prot) + ' g' : '–') + '</td></tr>').join('') +
+      '</tbody></table></div>';
+    const lines = ws.slice(0, 2).map(w => {
+      const f = w.feel, bits = [];
+      if (f.sleep) bits.push('sleep ' + f.sleep); if (f.stress) bits.push('stress ' + f.stress); if (f.motivation) bits.push('motivation ' + f.motivation);
+      return bits.length ? '<p class="small muted" style="margin-top:8px"><b style="color:var(--ink)">' + (w.k === 0 ? 'Last 7 days' : 'Week before') + ':</b> ' + bits.join(', ') + '</p>' : '';
+    }).join('');
+    return h + lines + '<p class="small muted" style="margin-top:10px">Calories and protein are averages over the days you logged food.</p></div>';
+  }
+};
+
+'use strict';
 /* ═══ app: navigation, actions, onboarding, backup, boot ═════════════════════ */
 
-const VIEWS = ['today', 'train', 'eat', 'progress', 'recovery', 'review', 'library', 'protocols', 'supps', 'profile'];
+const VIEWS = ['today', 'train', 'eat', 'progress', 'recovery', 'review', 'library', 'protocols', 'supps', 'profile', 'history'];
 const RENDER = {
   today: () => Dashboard.render(), train: () => WorkoutView.render(), eat: () => EatView.render(), progress: () => ProgressView.render(),
-  review: () => ReviewView.render(), library: () => LibraryView.render(), supps: () => SuppsView.render(), profile: () => ProfileView.render()
+  history: () => HistoryView.render(), review: () => ReviewView.render(), library: () => LibraryView.render(), supps: () => SuppsView.render(), profile: () => ProfileView.render()
 };
 const TAB_FOR = { today: 'today', train: 'train', eat: 'eat', progress: 'progress' };
 
@@ -2894,7 +3518,29 @@ const ACTIONS = {
   'coach-change': () => Coach.change(),
   'coach-change-train': () => { Coach.editing = true; WorkoutView.render(); },
   'coach-focus': () => { const c = Utils.el('coach'); if (c) c.scrollIntoView({ behavior: Utils.reduced() ? 'auto' : 'smooth', block: 'center' }); },
+  'supp-save': t => SuppsView.save(t.dataset.key),
   'add-food': () => EatView.add(),
+  'quick-add': t => EatView.quickAdd(t.dataset.id),
+  'save-meal-form': () => EatView.saveMealForm(),
+  'entry-save': t => EatView.saveEntry(t.dataset.id),
+  'entry-edit': t => EatView.editEntry(t.dataset.id),
+  'entry-cancel': () => EatView.cancelEdit(),
+  'meal-del': t => EatView.delMeal(t.dataset.id),
+  'meals-manage': () => EatView.toggleManage(),
+  portion: t => EatView.setPortion(t.dataset.v),
+  'wrap-done': () => Dashboard.wrapDone(),
+  'wrap-undo': () => Dashboard.wrapUndo(),
+  'hist-prev': () => HistoryView.shift(-1),
+  'hist-next': () => HistoryView.shift(1),
+  'hist-day': t => HistoryView.pick(t.dataset.date),
+  'hist-edit': () => HistoryView.edit(true),
+  'hist-edit-done': () => { HistoryView.edit(false); Utils.toast('Saved'); },
+  'hist-new': t => HistoryView.create(t.dataset.key),
+  'hist-complete': () => HistoryView.complete(),
+  'hist-del': t => Utils.twoTap(t, 'Tap again to delete', () => HistoryView.remove()),
+  'hist-set-done': t => HistoryView.toggleSet(Number(t.dataset.ex), Number(t.dataset.set), t),
+  'hist-all': () => { HistoryView.showAll = !HistoryView.showAll; HistoryView.render(); },
+  'meas-del': t => Utils.twoTap(t, 'Tap again', () => ProgressView.del(t.dataset.saved)),
   'del-food': t => EatView.remove(t.dataset.id),
   'clear-day': t => Utils.twoTap(t, 'Tap again to clear', () => EatView.clearDay()),
   'save-measure': () => ProgressView.save(),
@@ -2928,6 +3574,7 @@ function wire() {
   });
   document.addEventListener('input', e => {
     const t = e.target;
+    if (t.classList && t.classList.contains('h-in')) { HistoryView.updateSet(Number(t.dataset.ex), Number(t.dataset.set), t.dataset.f, t.value); return; }
     if (t.classList && t.classList.contains('set-in')) { WorkoutView.updateSet(Number(t.dataset.ex), Number(t.dataset.set), t.dataset.f, t.value); return; }
     if (t.id && /^sl-(energy|mood|rec)$/.test(t.id)) {
       Utils.el(t.id + '-o').textContent = t.value;
