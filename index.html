@@ -666,6 +666,29 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
 .cmp-grid .in { min-height: 42px; font-size: .9rem; margin-bottom: 8px; padding: 0 8px; }
 .cmp-slot { border-style: solid; }
 .seg button small { font-weight: 700; color: var(--ink-3); margin-left: 2px; }
+
+/* ── Charts ──────────────────────────────────────────────────────────────── */
+.cs-grid { stroke: var(--line); stroke-width: 1; }
+.cs-ax { fill: var(--ink-3); font-size: 9.5px; font-family: var(--font-body); font-weight: 600; }
+.cs-val { fill: var(--ink); font-size: 10.5px; font-weight: 700; font-family: var(--font-body); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.cs-bar { fill: var(--primary); }
+.cs-bar.soft { opacity: .42; }
+.cs-empty { fill: var(--track); }
+.cs-tgt { stroke: var(--blue); stroke-width: 1.5; }
+.cs-tgt-t { fill: var(--ink-2); font-size: 9.5px; font-weight: 700; font-family: var(--font-body); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.cs-line { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cs-area { fill: var(--primary); opacity: .1; }
+.cs-dot { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
+.cs-hit { fill: transparent; cursor: default; outline: none; }
+.cs-hit:hover, .cs-hit:focus-visible { fill: color-mix(in srgb, var(--ink) 7%, transparent); }
+.cs-hit:focus-visible { stroke: var(--blue); stroke-width: 2; }
+.tip { position: fixed; z-index: 95; max-width: min(86vw, 300px); padding: 8px 12px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: .8rem; font-weight: 600; line-height: 1.35; pointer-events: none; box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .45); }
+.cs-table { margin-top: 10px; border-top: 1px solid var(--line); }
+.cs-table summary { font-size: .85rem; color: var(--ink-2); }
+.cs-table summary .i { transition: transform .2s ease; }
+.cs-table[open] summary .i { transform: rotate(180deg); }
+.cs-key { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: .82rem; font-weight: 600; color: var(--ink-2); }
+.cs-key-line { width: 18px; height: 0; border-top: 2px solid var(--blue); border-radius: 1px; }
 </style></head><body><svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M10 20v-5.5h4V20"/></symbol>
@@ -764,6 +787,8 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
   <button type="button" class="side-btn" data-go="profile"><svg class="i"><use href="#i-user"/></svg>Profile &amp; settings</button>
   <div class="side-foot">Your data stays in this browser.<br>Back it up in Profile.</div>
 </aside>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
 
 <!-- ═════════ MAIN ═════════ -->
 <main class="main" id="main">
@@ -873,6 +898,18 @@ body.has-rest .main { padding-bottom: calc(var(--tabbar-h) + 190px + env(safe-ar
     <section>
       <h2 class="sec-h">Last four weeks</h2>
       <div id="p-weeks"></div>
+    </section>
+    <section>
+      <h2 class="sec-h">Food, last 14 days</h2>
+      <div class="card" id="p-nut"></div>
+    </section>
+    <section>
+      <h2 class="sec-h">Strength</h2>
+      <div class="card" id="p-str"></div>
+    </section>
+    <section>
+      <h2 class="sec-h">Weekly volume</h2>
+      <div class="card" id="p-vol"></div>
     </section>
     <section>
       <h2 class="sec-h">Log measurements</h2>
@@ -2883,6 +2920,7 @@ const ProgressView = {
 
     ProgressView.renderPhotos();
     ProgressView.renderCompare();
+    ProgressCharts.render();
   },
 
   renderPhotos() {
@@ -3775,6 +3813,160 @@ const Insights = {
 };
 
 'use strict';
+/* ═══ charts: food, strength, weekly volume ══════════════════════════════════
+ * Plain SVG, no library. One series per chart, one axis, thin marks, a hover or
+ * tap tooltip on every mark, and a table view for anyone who prefers numbers. */
+
+const Tip = {
+  el: null, timer: 0,
+  show(target) {
+    const tip = Tip.el || (Tip.el = Utils.el('tip')); if (!tip || !target) return;
+    tip.textContent = target.getAttribute('data-tip'); tip.hidden = false;
+    const r = target.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = r.left + r.width / 2 - tw / 2; x = Math.max(8, Math.min(window.innerWidth - tw - 8, x));
+    let y = r.top - th - 8; if (y < 8) y = r.bottom + 8;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  },
+  hide() { clearTimeout(Tip.timer); const tip = Tip.el || Utils.el('tip'); if (tip) tip.hidden = true; },
+  tap(target) { Tip.show(target); clearTimeout(Tip.timer); Tip.timer = setTimeout(Tip.hide, 2600); }
+};
+
+const Charts = {
+  /** A clean axis maximum and step for 0-based charts. */
+  nice(max) {
+    if (!(max > 0)) return { max: 1, step: 0.5 };
+    const raw = max / 3, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+    const n = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10, step = n * p;
+    return { step, max: step * Math.ceil(max / step - 1e-9) };
+  },
+  esc: s => Utils.esc(String(s)),
+
+  /** Columns from a zero baseline. items: [{label, v, tip, soft}] */
+  bars(items, o) {
+    o = o || {};
+    const W = 320, H = 172, L = 40, R = 8, T = 18, B = 26, n = items.length;
+    const slot = (W - L - R) / n, bw = Math.min(24, slot * 0.62);
+    const maxV = Math.max.apply(null, items.map(i => i.v).concat([o.target || 0]));
+    const ax = Charts.nice(maxV * 1.04), yb = H - B, y = v => T + (yb - T) * (1 - v / ax.max);
+    let grid = '';
+    for (let t = 0; t <= ax.max + 1e-9; t += ax.step) grid += '<line class="cs-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(t).toFixed(1) + '" y2="' + y(t).toFixed(1) + '"/><text class="cs-ax" x="' + (L - 6) + '" y="' + (y(t) + 3).toFixed(1) + '" text-anchor="end">' + Utils.fmt(t) + '</text>';
+    let marks = '', lastIdx = -1;
+    items.forEach((it, i) => { if (it.v > 0) lastIdx = i; });
+    items.forEach((it, i) => {
+      const x0 = L + slot * i + (slot - bw) / 2, cx = x0 + bw / 2;
+      if (it.v > 0) {
+        const yt = y(it.v), h = Math.max(2, yb - yt), r = Math.min(4, bw / 2, h), top = yb - h;
+        marks += '<path class="cs-bar' + (it.soft ? ' soft' : '') + '" d="M' + x0.toFixed(1) + ' ' + yb + 'V' + (top + r).toFixed(1) + 'Q' + x0.toFixed(1) + ' ' + top.toFixed(1) + ' ' + (x0 + r).toFixed(1) + ' ' + top.toFixed(1) + 'H' + (x0 + bw - r).toFixed(1) + 'Q' + (x0 + bw).toFixed(1) + ' ' + top.toFixed(1) + ' ' + (x0 + bw).toFixed(1) + ' ' + (top + r).toFixed(1) + 'V' + yb + 'Z"/>';
+        if (i === lastIdx && !o.noLabel) marks += '<text class="cs-val" x="' + (i === n - 1 ? (x0 + bw) : cx).toFixed(1) + '" y="' + (top - 5).toFixed(1) + '" text-anchor="' + (i === n - 1 ? 'end' : 'middle') + '">' + Charts.esc(o.fmt ? o.fmt(it.v) : Utils.fmt(it.v)) + '</text>';
+      } else marks += '<rect class="cs-empty" x="' + x0.toFixed(1) + '" y="' + (yb - 3) + '" width="' + bw.toFixed(1) + '" height="3" rx="1.5"/>';
+      if ((n - 1 - i) % (o.skip || 1) === 0) marks += '<text class="cs-ax" x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + Charts.esc(it.label) + '</text>';
+      marks += '<rect class="cs-hit" x="' + (L + slot * i).toFixed(1) + '" y="' + T + '" width="' + slot.toFixed(1) + '" height="' + (yb - T) + '" tabindex="0" data-tip="' + Charts.esc(it.tip) + '" aria-label="' + Charts.esc(it.tip) + '"/>';
+    });
+    const tgt = o.target ? '<line class="cs-tgt" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(o.target).toFixed(1) + '" y2="' + y(o.target).toFixed(1) + '"/>' : '';
+    return '<svg class="chart cs" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + Charts.esc(o.aria || 'Bar chart') + '">' + grid + marks + tgt + '</svg>';
+  },
+
+  /** One line over time. points: [{d, v, tip}] */
+  line(points, o) {
+    o = o || {};
+    const W = 320, H = 168, L = 40, R = 18, T = 20, B = 26;
+    const vs = points.map(p => p.v);
+    let lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+    const pad = Math.max((hi - lo) * 0.25, hi * 0.03, 0.5); lo -= pad; hi += pad;
+    const d0 = points[0].d, span = Math.max(1, Dates.diff(d0, points[points.length - 1].d));
+    const x = p => L + (W - L - R) * (Dates.diff(d0, p.d) / span), yb = H - B;
+    const y = v => T + (yb - T) * (1 - (v - lo) / (hi - lo));
+    const dec = hi - lo > 12 ? 0 : 1;
+    const ticks = [lo + pad, (lo + hi) / 2, hi - pad].map(v => '<line class="cs-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"/><text class="cs-ax" x="' + (L - 6) + '" y="' + (y(v) + 3).toFixed(1) + '" text-anchor="end">' + v.toFixed(dec) + '</text>').join('');
+    const path = points.map((p, i) => (i ? 'L' : 'M') + x(p).toFixed(1) + ' ' + y(p.v).toFixed(1)).join('');
+    const last = points[points.length - 1];
+    const area = path + 'L' + x(last).toFixed(1) + ' ' + yb + 'L' + x(points[0]).toFixed(1) + ' ' + yb + 'Z';
+    const dots = points.map((p, i) => (points.length > 10 && i < points.length - 1) ? '' : '<circle class="cs-dot" cx="' + x(p).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="' + (i === points.length - 1 ? 5 : 4) + '"/>').join('');
+    const hits = points.map(p => '<circle class="cs-hit" cx="' + x(p).toFixed(1) + '" cy="' + y(p.v).toFixed(1) + '" r="14" tabindex="0" data-tip="' + Charts.esc(p.tip) + '" aria-label="' + Charts.esc(p.tip) + '"/>').join('');
+    const endL = o.endLabel ? '<text class="cs-val" x="' + Math.min(W - R, x(last)).toFixed(1) + '" y="' + (y(last.v) - 11).toFixed(1) + '" text-anchor="end">' + Charts.esc(o.endLabel) + '</text>' : '';
+    return '<svg class="chart cs" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + Charts.esc(o.aria || 'Line chart') + '">' + ticks +
+      '<path class="cs-area" d="' + area + '"/><path class="cs-line" d="' + path + '"/>' + dots + endL +
+      '<text class="cs-ax" x="' + L + '" y="' + (H - 8) + '">' + Dates.fmt(points[0].d, { day: 'numeric', month: 'short' }) + '</text>' +
+      '<text class="cs-ax" x="' + (W - R) + '" y="' + (H - 8) + '" text-anchor="end">' + Dates.fmt(last.d, { day: 'numeric', month: 'short' }) + '</text>' + hits + '</svg>';
+  },
+
+  table(headers, rows) {
+    return '<details class="fold cs-table"><summary>Show as table <svg class="i i-sm"><use href="#i-chev"/></svg></summary><div class="wk-wrap"><table class="wk"><thead><tr>' +
+      headers.map((h, i) => '<th' + (i ? '' : ' style="text-align:left"') + '>' + Charts.esc(h) + '</th>').join('') + '</tr></thead><tbody>' +
+      rows.map(r => '<tr>' + r.map((c, i) => i ? '<td class="num">' + Charts.esc(c) + '</td>' : '<th scope="row">' + Charts.esc(c) + '</th>').join('') + '</tr>').join('') + '</tbody></table></div></details>';
+  }
+};
+
+const ProgressCharts = {
+  metric: 'cal', exId: null,
+
+  render() {
+    ProgressCharts.food(); ProgressCharts.strength(); ProgressCharts.volume();
+  },
+
+  food() {
+    const box = Utils.el('p-nut'); if (!box) return;
+    const tg = Targets.get(), m = ProgressCharts.metric, today = Dates.today();
+    const target = m === 'cal' ? tg.kcal : tg.protein, unit = m === 'cal' ? 'kcal' : 'g';
+    const items = [], rows = []; let any = 0;
+    for (let i = 14; i >= 1; i--) {
+      const d = Dates.add(today, -i), n = dayNutrition(d), v = Math.round(m === 'cal' ? n.cal : n.prot);
+      if (v > 0) any++;
+      const pct = target ? Math.round(v / target * 100) : 0, nice = Dates.fmt(d, { weekday: 'short', day: 'numeric', month: 'short' });
+      items.push({ label: Dates.weekday(d, 'narrow'), v, soft: v > 0 && v < target * 0.9, tip: v ? nice + ': ' + Utils.fmt(v) + ' ' + unit + ' (' + pct + '% of target)' : nice + ': nothing logged' });
+      rows.push([nice, v ? Utils.fmt(v) + ' ' + unit : 'not logged', v ? pct + '%' : '–']);
+    }
+    const seg = '<div class="seg" role="group" aria-label="Metric">' + [['cal', 'Calories'], ['prot', 'Protein']].map(x => '<button type="button" data-action="chart-metric" data-m="' + x[0] + '" aria-pressed="' + (m === x[0]) + '">' + x[1] + '</button>').join('') + '</div>';
+    if (any < 2) { box.innerHTML = seg + '<div class="empty" style="margin-top:12px">Log food on a few days and your last two weeks show up here.</div>'; return; }
+    box.innerHTML = seg + '<p class="cs-key"><span class="cs-key-line"></span>Target ' + Utils.fmt(target) + ' ' + unit + '</p><div>' + Charts.bars(items, { target, aria: (m === 'cal' ? 'Calories' : 'Protein') + ' per day for the last 14 days against a target of ' + target + ' ' + unit }) + '</div>' +
+      '<p class="small muted" style="margin-top:6px">Solid bars reached 90% of your target, faded bars did not. Today is left out because it is still unfinished.</p>' +
+      Charts.table(['Day', m === 'cal' ? 'Calories' : 'Protein', 'Of target'], rows);
+  },
+
+  strength() {
+    const box = Utils.el('p-str'); if (!box) return;
+    const logs = AppState.getWorkoutLogs(), by = {};
+    Object.keys(logs).sort().forEach(d => {
+      const l = logs[d]; if (!l || !l.completed) return;
+      (l.exercises || []).forEach(e => { const b = Records.best(e.sets); if (b) (by[e.id] = by[e.id] || { name: e.name, pts: [] }).pts.push({ d, v: b.e1rm, w: b.weight, r: b.reps }); });
+    });
+    const ids = Object.keys(by).filter(id => by[id].pts.length >= 2).sort((a, b) => by[b].pts.length - by[a].pts.length || by[b].pts[by[b].pts.length - 1].d.localeCompare(by[a].pts[by[a].pts.length - 1].d));
+    if (!ids.length) { box.innerHTML = '<div class="empty">Once an exercise has weights in two finished sessions, its strength curve appears here.</div>'; return; }
+    if (ProgressCharts.exId == null || !by[ProgressCharts.exId] || by[ProgressCharts.exId].pts.length < 2) ProgressCharts.exId = ids[0];
+    const ex = by[ProgressCharts.exId], pts = ex.pts.slice(-24);
+    const last = pts[pts.length - 1], first = pts[0], chg = last.v - first.v;
+    const line = Charts.line(pts.map(p => ({ d: p.d, v: p.v, tip: Dates.fmt(p.d, { day: 'numeric', month: 'short' }) + ': ' + p.w + ' kg × ' + p.r + ' (est. 1RM ' + Math.round(p.v) + ' kg)' })), { aria: ex.name + ' estimated one-rep max over time, from ' + Math.round(first.v) + ' to ' + Math.round(last.v) + ' kilograms', endLabel: last.w + ' × ' + last.r });
+    box.innerHTML = '<label class="field"><span>Exercise</span><select class="in" id="str-ex">' + ids.map(id => '<option value="' + Charts.esc(id) + '"' + (id === ProgressCharts.exId ? ' selected' : '') + '>' + Charts.esc(by[id].name) + ' (' + by[id].pts.length + ')</option>').join('') + '</select></label>' +
+      '<p class="small" style="margin-top:12px"><b>' + (chg >= 0 ? '+' : '') + Math.round(chg) + ' kg</b> <span class="muted">estimated 1RM since ' + Dates.fmt(first.d, { day: 'numeric', month: 'short' }) + '</span></p>' +
+      '<div style="margin-top:6px">' + line + '</div>' +
+      '<p class="small muted" style="margin-top:6px">Your best set each session, converted to an estimated one-rep max so different rep counts can be compared. The label shows the latest best set.</p>' +
+      Charts.table(['Date', 'Best set', 'Est. 1RM'], pts.slice().reverse().map(p => [Dates.fmt(p.d, { day: 'numeric', month: 'short', year: 'numeric' }), p.w + ' kg × ' + p.r, Math.round(p.v) + ' kg']));
+  },
+  setEx(id) { ProgressCharts.exId = id; ProgressCharts.strength(); },
+  setMetric(m) { ProgressCharts.metric = m === 'prot' ? 'prot' : 'cal'; ProgressCharts.food(); },
+
+  volume() {
+    const box = Utils.el('p-vol'); if (!box) return;
+    const today = Dates.today(), logs = AppState.getWorkoutLogs(), items = [], rows = []; let total = 0;
+    for (let k = 7; k >= 0; k--) {
+      const end = Dates.add(today, -7 * k), start = Dates.add(end, -6);
+      let v = 0, s = 0;
+      Object.keys(logs).forEach(d => { if (d >= start && d <= end && logs[d].completed) { s++; v += Records.volume(logs[d]); } });
+      total += v;
+      const lab = Dates.fmt(start, { day: 'numeric', month: 'short' }) + ' to ' + Dates.fmt(end, { day: 'numeric', month: 'short' });
+      items.push({ label: Dates.fmt(start, { day: 'numeric', month: 'short' }), v, tip: lab + ': ' + (v ? Utils.fmt(v) + ' kg lifted' : 'no weights logged') + ', ' + s + (s === 1 ? ' session' : ' sessions') });
+      rows.push([lab, v ? Utils.fmt(v) + ' kg' : '–', String(s)]);
+    }
+    if (!total) { box.innerHTML = '<div class="empty">Log weights in a few sessions and your weekly total shows up here.</div>'; return; }
+    const cur = items[items.length - 1].v, prev = items[items.length - 2].v;
+    const head = '<p class="small"><b>' + Utils.fmt(cur) + ' kg</b> <span class="muted">lifted in the last 7 days' + (prev ? ', ' + (cur >= prev ? 'up ' : 'down ') + Math.abs(Math.round((cur - prev) / prev * 100)) + '% on the week before' : '') + '</span></p>';
+    box.innerHTML = head + '<div style="margin-top:6px">' + Charts.bars(items, { skip: 2, noLabel: true, fmt: v => Utils.fmt(v) + ' kg', aria: 'Total weight lifted per week for the last 8 weeks' }) + '</div>' +
+      '<p class="small muted" style="margin-top:6px">Weight times reps across finished sessions. Each bar is a 7-day block and the last one is the last 7 days. Slow steady growth is the goal, not spikes.</p>' +
+      Charts.table(['Week', 'Lifted', 'Sessions'], rows.slice().reverse());
+  }
+};
+
+'use strict';
 /* ═══ app: navigation, actions, onboarding, backup, boot ═════════════════════ */
 
 const VIEWS = ['today', 'train', 'eat', 'progress', 'recovery', 'review', 'library', 'protocols', 'supps', 'profile', 'history'];
@@ -3938,6 +4130,7 @@ const ACTIONS = {
   score: t => ReviewView.pick(t.dataset.group, t.dataset.v),
   'save-review': () => ReviewView.save(),
   'lib-filter': t => LibraryView.setFilter(t.dataset.g),
+  'chart-metric': t => ProgressCharts.setMetric(t.dataset.m),
   'cmp-slot': t => ProgressView.setCmpSlot(t.dataset.slot),
   'lib-jump': t => LibraryView.jump(t.dataset.id),
   'lib-open': t => LibraryView.toggle(t.dataset.id),
@@ -3980,6 +4173,7 @@ function wire() {
   });
   document.addEventListener('change', e => {
     if (e.target.id === 'ob-sex') Onboarding.suggest(false);
+    if (e.target.id === 'str-ex') ProgressCharts.setEx(e.target.value);
     if (e.target.id === 'cmp-a') ProgressView.setCmp('a', e.target.value);
     if (e.target.id === 'cmp-b') ProgressView.setCmp('b', e.target.value);
   });
@@ -3989,7 +4183,13 @@ function wire() {
     const f = e.target.files[0]; if (!f) return;
     const r = new FileReader(); r.onload = () => Backup.restore(String(r.result)); r.onerror = () => Utils.toast('Could not read that file'); r.readAsText(f);
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') Nav.closeMore(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { Nav.closeMore(); Tip.hide(); } });
+  document.addEventListener('pointerover', e => { if (e.pointerType === 'mouse') { const t = e.target.closest && e.target.closest('[data-tip]'); if (t) Tip.show(t); } });
+  document.addEventListener('pointerout', e => { if (e.pointerType === 'mouse' && e.target.closest && e.target.closest('[data-tip]')) Tip.hide(); });
+  document.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { const t = e.target.closest && e.target.closest('[data-tip]'); if (t) Tip.tap(t); else Tip.hide(); } });
+  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-tip]'); if (t) Tip.show(t); });
+  document.addEventListener('focusout', () => Tip.hide());
+  window.addEventListener('scroll', () => Tip.hide(), { passive: true });
   document.addEventListener('fos:storage-error', e => { const b = Utils.el('storage-banner'); b.textContent = e.detail; b.hidden = false; });
   window.addEventListener('hashchange', () => { const h = location.hash.replace('#', ''); if (VIEWS.indexOf(h) >= 0 && h !== Nav.current) Nav.go(h, true); });
   /* a new day: when the tab comes back to the front, refresh */
